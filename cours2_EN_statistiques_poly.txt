@@ -1,0 +1,672 @@
+                        SPLEX
+Statistiques pour la classification et fouille de données
+                     en génomique
+                      Tests d’hypothèses
+
+
+
+                   Pierre-Henri WUILLEMIN
+
+                        Decision-axe IA-LIP6
+                  pierre-henri.wuillemin@lip6.fr
+   Statistical hypothesis tests : introduction
+
+
+    ➽ Définition
+    An hypothesis test is a decision rule used to determine which of two hypotheses
+    concerning the value of a parameter (p, µ, σ2 , . . .) is the more plausible.
+
+
+    The first and perhaps most complicated step in constructing a hypothesis test is to identify the two hypotheses
+    and formulating them in statistical language.
+
+
+
+    The two hypotheses to be confronted will always be noted :
+             H0 : null hypothesis and
+             H1 : alternative hypothesis
+    These two hypotheses must be mutually exclusive.
+
+
+
+    In principle, H0 is the hypothesis we are trying to verify.
+
+
+
+
+SPLEX Statistiques pour la classification et fouille de données en génomique   Tests d’hypothèses          2 / 27
+   Statitstical tests
+
+    Formalisation
+    Let X follow a law Pθ on X , parametrized by θ ∈ Θ. We have a sample X1 , · · · , Xn , all i.i.d. of law Pθ .
+    Let θ = θ0 ∪ θ1 be a partition. On the sample, test the 2 hypotheses :
+
+
+                                                 H0 : θ ∈ θ0                     H1 : θ ∈ θ1
+
+
+
+    Exemple
+    In an assembly of 100 people, each person is asked to give a random number between 0 and 9. Note
+    xi ∈ {0, · · · , 9} the number given by individual i and nj the number of individuals who gave the number j.
+    The results (i.e. the set of (j, nj ) where j = 0, · · · , 9) are as follows :
+                         (0, 10), (1, 8), (2, 9), (3, 14), (4, 8), (5, 9), (6, 11), (7, 9), (8, 12), (9, 10)
+    Can we consider that these numbers were indeed given at random, in the sense that the xi are realizations of
+    random variables i.i.d. distributed according to a uniform distribution on {0, · · · , 9} ?
+    The point is to test :
+
+
+                                   H0 : X uniform over {0, · · · , 9}                            H1 : no
+
+
+SPLEX Statistiques pour la classification et fouille de données en génomique     Tests d’hypothèses          3 / 27
+   Hypothesis testing in classic statistics
+    hypothesis
+             Θ = set of values for the parameter θ
+             Θ partitioned in Θ0 et Θ1
+             hypothesis = a statement H0 = ‘‘θ ∈ Θ0 "and H1 = ‘‘θ ∈ Θ1 "
+             H0 = null hypothesis, H1 = alternative hypothesis
+             hypothesis Hi is simple id Θi is a singleton ; otherwise it is multiple
+             if Θ ⊂ R, unilateral test = values in Θ1 are all bigger or smaller than values
+             in Θ0 ; otherwise it is bilateral.
+                                                 hypothesis                               test
+                        H0 : µ = 4                 simple
+                                                                                     unilateral
+                        H1 : µ = 6                 simple
+                        H0 : µ = 4                 simple
+                                                                                   unilateral test
+                        H1 : µ > 4                multiple
+                        H0 : µ = 4                 simple
+                                                                                   test bilatéral
+                        H1 : µ ̸= 4               multiple
+                        H0 : µ = 4                 simple                incorrect formulation : hypothesis
+                        H1 : µ > 3               composée                     not mutually exclusive.
+
+SPLEX Statistiques pour la classification et fouille de données en génomique      Tests d’hypothèses       4 / 27
+   Decision rule
+
+
+      Constructing the decision rule means determining which values the parameter
+    under study (e.g. x) is unlikely to take in the sample if the hypothesis H0 is true.
+      It is necessary to analyze the distribution of the estimator of the parameter in
+    the sample when H0 is true and to determine a critical rcritical egion, or region of
+    rejection of H0 , such that if the value taken by the estimator is in this region, it is
+    unlikely that H0 is true.
+
+
+     The critical region must take into account the form of the counter-hypothesis so that the rejection of H0
+    means that H1 is a plausible choice.
+
+
+
+      The decision rule is based on the sampling results.
+      Sampling results are examined after the determination of the decision rule, not before.
+    The values of the parameter under the various assumptions must not be based on the observed result from the
+    sample.
+
+
+
+
+SPLEX Statistiques pour la classification et fouille de données en génomique   Tests d’hypothèses         5 / 27
+   Critical regions for numerical hypothesis
+
+
+    Critical regions
+                    hypothèses                                        Décision rule
+                    H0 : µ = µ 0
+                                               ≪  reject H0 if x > c ≫, where c is bigger than µ0
+                    H1 : µ > µ 0
+                    H0 : µ = µ 0
+                                               ≪  rejec H0 if x < c ≫, where c is smaller than µ0
+                    H1 : µ < µ 0
+                    H0 : µ = µ 0
+                                               ≪ reject H0 if x < c1 ou c2 < x ≫, where c1 and c2
+                    H1 : µ ̸= µ0               are respectively smaller and bigger than µ0
+
+
+
+
+SPLEX Statistiques pour la classification et fouille de données en génomique      Tests d’hypothèses   6 / 27
+   Errors in decisions
+                                          ”Reality”
+                                                                            H0 is ”true”        H1 is ”true”
+                              Decision taken
+                                                                                               bad decision.
+                                 H0 is not rejected                                            type II error
+                                                                                                    β
+                                                                           bad decision.
+                                     H0 is rejected                         type I error
+                                                                                 α
+                             α = type I risk
+                               = probability of making a type I error
+                               = probability of rejecting H0 konwing that H0 is true
+                               = P(rejeter H0 |H0 is true),
+                            β = type II risk
+                              = probability of making a type II error
+                              = probability de rejecting H1 knowing that H1 is true
+                              = P(reject H1 |H1 is true).
+
+SPLEX Statistiques pour la classification et fouille de données en génomique       Tests d’hypothèses       7 / 27
+   Calculating α (1/2)
+
+
+    exemple
+             sample of size 25
+             Estimation of parameter µ for a variable X ∼ N (µ; 100)
+             hypothesis : H0 : µ = 10                          H1 : µ > 10
+
+                                     X −µ  X − 10   X − 10
+    Assuming H0 :                      √ =        =        ∼ N (0; 1)
+                                     σ/ n   10/5      2
+
+    Assuming H0 : unlikely that X deviates from µ by more than 2 standard
+    deviations (σ) (p=4,56%)
+
+    =⇒ unlikely that X < 6 ou X > 14
+
+    =⇒ The critical region could then be ≪reject H0 if x > 14≫
+
+
+
+SPLEX Statistiques pour la classification et fouille de données en génomique   Tests d’hypothèses   8 / 27
+   Calculating α (2/2)
+
+    Exemple
+             sample of size 25
+             Estimation of parameter µ for a variable X ∼ N (µ; 100)
+             hypothesis : H0 : µ = 10                          H1 : µ > 10
+             critical region : ≪reject H0 si x > 14≫
+
+                                            α = P(reject H0 |H0 is true)
+
+                                                 = P(X > 14|µ = 10)
+                                                                             
+                                                       X − 10   14 − 10
+                                                 =P           >         µ = 10
+                                                         2          2
+                                                                
+                                                       X − 10
+                                                 =P           > 2 = 0, 0228
+                                                         2
+
+                in general, α is fixed and we look for the critical region
+
+SPLEX Statistiques pour la classification et fouille de données en génomique   Tests d’hypothèses   9 / 27
+   Power of a test
+
+                                                      α = P(reject H0 |H0 is true)
+
+                                                      β = P(reject H1 |H1 is true)
+
+
+    α et β move in opposite directions to each other
+
+    =⇒ test = trade-off between the two risks
+
+    H0 = preferred hypothesis, verified to date and which we wouldn’t would like to
+    give up on.
+
+    =⇒ α0 is fixed :
+             α must be ≤ α0
+             test minimising β under this constraint
+             min β = max 1 − β
+             1 − β = power of the test
+
+
+SPLEX Statistiques pour la classification et fouille de données en génomique   Tests d’hypothèses   10 / 27
+   Test Power Curve
+                                    1 − β(µ1 )
+                          1,0
+
+
+
+                          0,8
+
+
+                          0,6                                              courbe de
+                                                                           puissance
+
+                          0,4
+
+
+
+                          0,2
+
+
+                                                                                                         µ1
+                                     10 11 12 13 14 15 16 17 18 19 20 21 22
+SPLEX Statistiques pour la classification et fouille de données en génomique     Tests d’hypothèses        11 / 27
+   Interpretation of α et β
+
+
+                      ne pas rejeter H0                                                             rejeter H0
+
+                      loi de X sous H0                                            loi de X sous H1 : µ = 12
+            4            6           8           10          12           14     16           18           20    22   24
+
+
+                             β
+
+
+                                                                                      α
+
+
+
+                                                 10          12
+
+
+
+
+SPLEX Statistiques pour la classification et fouille de données en génomique            Tests d’hypothèses              12 / 27
+   Likelihood
+
+    We remember that :
+                                                                            P(Y | X ) · P(X )
+                                                          P(X | Y ) =
+                                                                                 P(Y )
+    Ou encore :
+                                                          P(X | Y ) ∝ P(Y | X ) · P(X )
+
+    Let’s denote θ the parameter we want to estimate and d the observation we make .
+
+
+    ➽ Définition (Likelihood, prior and posterior probabilities)
+                                                       P(θ | d) ∝ P(d | θ) · P(θ)
+    On nomme :
+             P(θ) prior distribution over θ.
+             P(θ | d) posterior distribution over θ.
+             P(d | θ) = L(d, θ) = L(θ : d) likelihood.
+
+
+
+SPLEX Statistiques pour la classification et fouille de données en génomique          Tests d’hypothèses   13 / 27
+   Maximum Likelihood Estimation (MLE)
+                                                                                            0.04
+                                                                                                                                   x*(1-x)*(1-x)*x*x
+
+    Let X be a binary variable. With θ = P(X = 1) :
+
+                                                  Θ = {θ, 1 − θ}
+
+
+
+
+                                                                                 L(Θ : D)
+                              D = (1, 0, 0, 1, 1)
+                              Y
+        L(Θ : D) = P(D | Θ) =   P(X = dm | Θ)
+                                              m
+
+                                                                                              0
+    Ici : L(Θ : D) = θ · (1 − θ) · (1 − θ) · θ · θ.                                                0        0.2          0.4
+                                                                                                                           θ
+                                                                                                                                 0.6
+                                                                                                                                         
+                                                                                                                                             0.8       1
+
+                                                                                                         ^ = argmax
+                                                                                                         θ          θ      θ3 · (1 − θ)2
+
+
+
+
+    Probabilty estimator : frequency
+    For a sample where ’1’ appears p times, and ’0’ q = n − p times :
+                                L(Θ : D) = θp · (1 − θ)q
+                           d(Θ:D)
+    D’oé :                  dθ   = pθp−1 (1 − θ)q − q(1 − θ)q−1 θp
+                          d(Θ:D)
+                            dθ    = 0 ⇐⇒ p(1 − θ) − qθ = 0
+                                                    p
+    finalement :                              θ^ = p+q
+
+
+SPLEX Statistiques pour la classification et fouille de données en génomique                     Tests d’hypothèses                                 14 / 27
+   Neyman-Pearson’s Lemma
+
+
+    cas : Θ0 = {θ0 }                  Θ1 = {θ1 }
+
+
+    Neyman-Pearson’s Lemma
+             there is always a most powerful (random) test for a given threshold given α0
+             it’s a likelihood ratio
+                       L(x,θ0 )
+                       L(x,θ1 ) > k ⇒ x ∈ A (accepter H0 )
+                       L(x,θ0 )
+                                   < k ⇒ x ∈ W (rejeter H0 )
+             test : L(x,θ1 )
+                       L(x,θ0 )
+                       L(x,θ1 ) = k ⇒ δ(x) = ρ (accepter H0 avec proba 1 − ρ
+
+                                                                                 H1 whit proba ρ)
+             k and ρ determined uniquely by α = α0
+
+
+
+
+SPLEX Statistiques pour la classification et fouille de données en génomique       Tests d’hypothèses   15 / 27
+   χ2 ’s distribution
+
+                                                           P
+                                                           r
+    If (Xi )i∈{1,··· ,r } (i.i.d) ∼ N (0; 1) then                Xi ∼ N (0; n)
+                                                           i=1
+
+
+
+                              ➽ Définition (χ2 ’s distribution)
+                                                                                 X
+                                                                                 r
+                                                                                       Xi2 ∼ χ2(r )
+                                                                                 i=1
+    0,5
+                                  r is the degree of freedom.                                         mean= r and variance= 2r
+    0,4
+                                  n=2
+
+    0,3                                 n=5
+                                                   n=10
+    0,2
+                                                                                          If r > 100 then
+                                                                                                                 χ2(r ) ≈ N (r ; 2r ).
+    0,1
+
+
+
+       0
+               2      4       6      8        10   12     14      16     18      20
+SPLEX Statistiques pour la classification et fouille de données en génomique             Tests d’hypothèses                  16 / 27
+   Confindence intervall for σ2
+
+    If (Xi )i∈{1,··· ,n} (i.i.d) ∼ N (µ, σ2 ),
+    we know that                                                             X ∼ N (µ; σ2 /n)
+
+
+    ➽ Définition (Distribution of the corrected variance)
+                                                              Pn                  2
+                                                                        Xi − X
+                                                  S =2            i=1
+                                                                                       ∼ χ2(n−1)
+                                                                       n−1
+    And then
+
+     Let X be a random variable with the distribution N (µ; σ2 ). Let s 2 the corrected variance observed on a
+    sample of size n. Then the confidence interval for σ2 with a confidence level = 1 − α isgiven by :
+                                                         "                                 #
+                                                             (n − 1)s 2 (n − 1)s 2
+                                                                        ;                      .
+                                                             c(n−1), α2 c(n−1),1− α2
+
+
+
+SPLEX Statistiques pour la classification et fouille de données en génomique         Tests d’hypothèses   17 / 27
+   χ2 : statistical test
+
+    Critical region for H0 : σ2 = σ20
+                                                        ‘H1 ’             form of the critical region
+                                                           2                     (n−1)s 2
+                                                  H1 : σ       < σ20                        < cn−1;1−α
+                                                                                   σ2
+                                                                                    0
+
+                                                                                  (n−1)s 2
+                                                  H1 : σ2 > σ20                              > cn−1;α
+                                                                                     σ2
+                                                                                      0
+
+                                                                            (n−1)s 2
+                                                                                            < cn−1;1−α/2
+                                                                              σ2
+                                                                               0
+
+                                                  H1 : σ2 ̸= σ20                             ou
+                                                                                 (n−1)s 2
+                                                                                             < cn−1;α/2
+                                                                                   σ2
+                                                                                    0
+
+
+
+
+    Approximation of χ2 by a gaussian
+    When n > 30 :
+                                     1h      √       i2
+                                                   cn;α ≈
+                                         zα + 2n − 1
+                                     2
+    where zα if the 1 − α quantile fo a random variable Z ∼ N (0; 1).
+
+SPLEX Statistiques pour la classification et fouille de données en génomique                    Tests d’hypothèses   18 / 27
+   χ2 : goodness-of-fit test
+
+    ➽ Définition
+    goodness-of-fit test
+             goodness-of-fit test = test whose outcome is the acceptance or rejection of
+             the hypothesis that the observed sample follows a certain certain law.
+             contre-hypothèse : ne précise pas de quelle autre loi il aurait pu être tiré.
+
+             population =⇒ répartie en k classes.
+             hypothèse : répartition dans les classes connues.
+             =⇒ pl = proba qu’un individu appartienne à la classe l.
+             on tire au hasard des individus dans la population.
+             Nl = variable aléatoire ≪nombre d’individus tirés de classe l ≫
+                         Xk
+                             (Nl − n.pl )2
+                   2
+             soit D(n) =                   .
+                                  n.pl
+                                   l=1
+              2
+             D(n) = écart entre théorie et observation
+              2
+             D(n) tend en loi, lorsque n → ∞, vers une loi du χ2k−1 .
+SPLEX Statistiques pour la classification et fouille de données en génomique   Tests d’hypothèses   19 / 27
+   Utilisation de la loi du χ2 : tests d’ajustement (2)
+
+
+             population in k classes
+             sample of size n =⇒ count = (n1 , . . . , nk )
+             sample following the multinomial distribution (p1 , . . . , pk )
+             =⇒ (n1 , . . . , nk ) ≈ (n.p1 , . . . , n.pk )
+                          X
+                          k
+                            (Nl − n.pl )2
+              2
+             D(n) =                                       ∼ χ2k−1
+                                         n.pl
+                           l=1
+             d 2 value of D(n)
+                           2
+                               in the sample
+             =⇒ if the sample follows (p1 , . . . , pk ) then d 2 is small
+             In the table, dα2 such that P(χ2k−1 > dα2 ) = α
+             Decision rule : if d 2 < dα2 then (p1 , . . . , pk ) is accepted as the distribution
+             of the sample.
+
+
+
+
+SPLEX Statistiques pour la classification et fouille de données en génomique   Tests d’hypothèses   20 / 27
+   Independence test (1/3)
+
+             2 attributes X et Y
+             classes for X : A1 , A2 , . . . , AI
+             classes for Y : B1 , B2 , . . . , BJ
+             Sample of size n
+             Contingency table :
+
+                                             X \Y          B1        B2          ···   Bj        ···       BJ
+                                              A1           n11       n12         ···   n1j       ···       n1J
+                                              A2           n21       n22         ···   n2j       ···       n2J
+                                               ..           ..        ..                ..                  ..
+                                                .            .         .                 .                   .
+                                               Ai          ni1       ni2         ···   nij       ···       niJ
+                                                ..          ..        ..                ..                  ..
+                                                 .           .         .                 .                   .
+                                               AI          nI 1      nI 2        ···   nIj       ···       nIJ
+
+
+
+SPLEX Statistiques pour la classification et fouille de données en génomique               Tests d’hypothèses   21 / 27
+   Independence test (2/3)
+
+                                      X \Y          B1          B2      ···      Bj    ···     BJ        total
+                                       A1           n11         n12     ···      n1j   ···     n1J        n1·
+                                       A2           n21         n22     ···      n2j   ···     n2J        n2·
+                                        ..           ..          ..               ..            ..         ..
+                                         .            .           .                .             .          .
+                                         Ai         ni1         ni2     ···      nij   ···     niJ            ni·
+                                          ..         ..          ..               ..            ..             ..
+                                           .          .           .                .             .              .
+                                       AI           nI 1        nI 2    ···      nIj   ···     nIJ            nI ·
+                                      total         n·1         n·2     ···      n·j   ···     n·J             n
+
+                                                         nij
+                                                             = P(X ∈ Ai , Y ∈ Bj )
+                                                         n
+                                                      PJ                                                             PI
+                                                           j=1 nij                                               n    i=1 nij
+                  P(X ∈ Ai ) = nni· =                       n               and        P(Y ∈ Bj ) = n·j =                 n
+
+           X and Y independants =⇒ P(X ∈ Ai , Y ∈ Bj ) = P(X ∈ Ai ) × P(Y ∈ Bj )
+
+
+SPLEX Statistiques pour la classification et fouille de données en génomique          Tests d’hypothèses                     22 / 27
+   Independence test (3/3)
+
+                                      X \Y          B1        B2        ···      Bj    ···     BJ        total
+                                       A1           n11       n12       ···      n1j   ···     n1J        n1·
+                                       A2           n21       n22       ···      n2j   ···     n2J        n2·
+                                        ..           ..        ..                 ..            ..         ..
+                                         .            .         .                  .             .          .
+                                         Ai         ni1       ni2       ···      nij   ···     niJ            ni·
+                                          ..         ..        ..                 ..            ..             ..
+                                           .          .         .                  .             .              .
+                                       AI           nI 1      nI 2      ···      nIj   ···     nIJ            nI ·
+                                      total         n·1       n·2       ···      n·j   ···     n·J             n
+
+                                                        nij   ni·   n·j          ni· × n·j
+    X and Y independants =⇒                                 =     ×     =⇒ nij =
+                                                        n     n      n               n
+
+
+                                               X
+                                               I X
+                                                 J       n n
+                                                   (nij − i. .j )2         n
+                                                                     ni. n.j       ∼ χ2(I −1)×(J−1)
+                                               i=1 j=1                 n
+
+
+
+SPLEX Statistiques pour la classification et fouille de données en génomique          Tests d’hypothèses          23 / 27
+   Student’s distribution
+
+    Student’s distribution
+    Student’s distribution has only one parameter n (degree of freedom). The
+    distribution with n degrees is Tn .
+    • If X follows Tn then E (X ) = 0,
+    • V (X ) = n −n for n > 2.
+                    2
+    . WHen n >>, Tn is close to N (0; 1).
+                                          loi normale
+
+
+                                                                                 loi de Student
+
+
+
+
+                                                                                                       α
+
+
+
+
+                                                                                               tn;α
+SPLEX Statistiques pour la classification et fouille de données en génomique   Tests d’hypothèses       24 / 27
+   confidence intervall for µ
+    Let (xi )i≤n be a sample and x its mean and s 2 its variance.
+
+
+
+    Confidence intervall for µ with a confidence level 1 − α
+                 Situation                                     Distribution                 intervall
+
+       σ2 known                                           X−√µ ∼ N (0; 1)        x ± zα/2 × √σ
+                                                          σ/ n                                n
+       X ∼ N where n big (> 75)
+
+       σ2 unknown                                         X−√µ ∼ N (0; 1)        x ± zα/2 × √s
+                                                          S/ n                                n
+       n bigger (> 75)
+
+       σ2 unknown                                         X−√µ ∼ Tn−1            x ± tn−1;α/2 × √s
+                                                          S/ n                                    n
+       X ∼N
+
+
+
+
+SPLEX Statistiques pour la classification et fouille de données en génomique   Tests d’hypothèses    25 / 27
+   Comparison of different samples
+
+    Assume 2 samples :
+   • n1 , X 1 , s12 from a population µ1 ,σ21 ,                                  Comparison of µ1 and µ2
+   • n2 , X 2 , s22 from another population µ2 ,σ22 ,                            HO : µ1 = µ2
+                                                                                 H1 : µ1 ̸= µ2
+
+    Decision rule
+                   X1 − X2                                                                    (n1 − 1)s12 + (n2 − 1)s22
+               t=r           ∼ Tn1 +n2 −2                                      with s 2 =
+                                                                                                    n1 + n2 − 2
+                   2  1    1
+                  s n1 + n2
+
+
+
+
+                                                      α                                            α
+                                                      2
+                                                                         1−α                       2
+
+
+
+                                                          −t
+                                                               n; α                        t α
+                                                                                            n;
+                                                                  2                            2
+
+SPLEX Statistiques pour la classification et fouille de données en génomique          Tests d’hypothèses               26 / 27
+   Other tests in the TME
+
+             (Pearson’s) correlation coefficient
+
+
+
+
+                                   cov (X , Y )
+                     ρXY =
+                                    σX · σY
+
+
+
+             Kruskal-Wallis (non parametric test)
+
+             Different                                                                                       H0 : no différence between
+                                                                                                             différentes classes
+
+             salaries ?                                                          X
+                                                                                 C                           H=6.72
+                                                                      12               Rj2                   df=3-1=2
+                                                                                                             ⇒ χ2
+             Women : 23K, 41K, 54K, 66K, 78K.           H=                                   − 3(n + 1)             2,0.05 = 9.48 > 6.72
+                                                                                                             ⇒ we cannot reject H0
+             Men : 45K, 55K, 60K, 70K, 72K.                      n · (n + 1)           nj
+             Minorities : 18K, 30K, 34K, 40K, 44K.                               i=1
+
+
+
+
+SPLEX Statistiques pour la classification et fouille de données en génomique         Tests d’hypothèses                       27 / 27
+

@@ -1,0 +1,996 @@
+                        SPLEX
+Statistiques pour la classification et fouille de données
+                     en génomique
+                   Apprentissage statistique
+
+
+
+                   Pierre-Henri WUILLEMIN
+
+                        Decision-axe IA-LIP6
+                  pierre-henri.wuillemin@lip6.fr
+   Quelques points d’organisation
+
+
+
+    • Intervenants en cours : Nataliya Sokolovska, Pierre-Henri Wuillemin
+
+
+    • TME en python (Nataliya Sokolovska)
+
+
+    • Cours (55–65 201bis) – TME (14–15 509)
+
+
+    • Évaluation : 2 examens répartis (70%=35%+35%), une note de TME (30%)
+
+
+
+
+SPLEX Statistiques pour la classification et fouille de données en génomique   Apprentissage statistique   2 / 48
+   Un (tout petit) peu d’histoire
+                    La classification est un thème majeur de l’histoire de la biologie.
+
+     Andreas Caesalpinus (Césalpin),
+    De plantis libri XVI, Florence, 1583 : Première taxonomie.
+
+
+
+
+      Buffon, 1749
+                ≪  Le seul moyen de faire une méthode instructive et naturelle est
+                de mettre ensemble les choses qui se ressemblent et de séparer
+                celles qui diffèrent les unes des autres. ≫
+
+      XIXème siècle : Théorie statistique
+                                Quételet (1796–1874)
+                                Recensement américain, 1890 (utilisation de la carte perforée).
+
+      XXème siècle : Analyse de données, apprentissage statistique
+SPLEX Statistiques pour la classification et fouille de données en génomique   Apprentissage statistique   3 / 48
+   Quel est le problème ?
+
+    Description de la tâche de classification
+             Identifier la classe d’appartenance des objets à partir de certains de leurs
+             attributs (features),
+             Attribuer une classe à un objet à partir de ces attributs.
+
+
+    Buts de la classification
+             Connaissance (apprentissage) de la structure des ensembles d’objets
+             Processus de décisions automatiques
+
+
+    Applications
+             Diagnostic médical                                                 Contrôle de process
+             Prêt bancaire, Marketing                                           Reconnaissance de formes
+                               (profiling)                                                (pattern recognition)
+             Fusion de senseurs                                                  etc.
+
+SPLEX Statistiques pour la classification et fouille de données en génomique    Apprentissage statistique       4 / 48
+   Analyse de données et Data Mining
+
+    ➽ Définition (Analyse de données)
+    Ensemble de méthodes d’explorations de données considérées comme des points
+    dans un espace vectoriel multi-dimensionnel.
+    Par exemple : Analyse en Composantes Principales (ACP), régression linéaire, etc.
+
+    ➽ Définition (Data Mining)
+    Organisation et exploration de données considérées comme des points dans un
+    espace vectoriel multi-dimensionnel dans le but d’apprendre une structure ou
+    d’apprendre à prédire.
+
+             Prédire : apprentissage par l’exemple afin de mimer un comportement.
+                     Discrimination,
+                     Régression,
+                     Classification supervisée, etc.
+             Apprendre une structure : extraire de l’information.
+                     Classification non supervisée,
+                     Détection de motifs, etc.
+SPLEX Statistiques pour la classification et fouille de données en génomique   Apprentissage statistique   5 / 48
+   Formalisation
+        Soit Π une population (un ensemble d’objets),
+        chaque élément de Π est déterminé par d attributs (supposément
+        quantitatifs). On nomme D ⊆ Rd l’espace descriptif,
+        chaque élément de Π appartient à une classe de C.
+    Autrement dit,
+    Relations fonctionnelles
+    ∃D : Π → D et C : Π → C telles que ∀π ∈ Π,                                                                                 Π
+
+
+             D(π) est le vecteur des attributs déterminant π,                                                       D(.)           C (.)
+
+
+             C (π) est la classe de π.                                                                               D                 C
+
+
+    On ne connait en fait un objet π que par l’intermédiaire de sa description D(π).
+
+    Tâche de classification
+                                                                                                                     Π
+    Trouver Cb : D → C telle que
+                                                                                                             D(.)           C (.)
+         ∀π, Cb (D(π)) ≈ C (π) avec “le moins d’erreur possible”
+    C est appelé le classifieur.
+    b                                                                                                        D
+                                                                                                                    Cb(.)
+                                                                                                                               C
+
+
+SPLEX Statistiques pour la classification et fouille de données en génomique   Apprentissage statistique                                  6 / 48
+                                                                                                                     Π
+
+   Trouver Cb : méthodologie en mode supervisé                                                             D(.)           C (.)
+
+
+    On suppose que D, C et D sont parfaitement connus mais pas C .                                           D                 C
+                                                                                                                    Cb(.)
+
+      1   Apprentissage sur un base d’exemples
+    Soit Πa ⊂ Π pour lequel on connait parfaitement la restriction C|Πa ,
+                            on peut alors estimer Cb sur Πa .
+      2   Validation sur un base d’exemples
+    Soit Πv ⊂ Π \ Πa pour lequel on connait parfaitement la restriction C|Πv ,
+         On peut alors évaluer Cb sur Πv et construire des indicateurs de qualité.
+      3   Prédiction
+    ∀π ∈ Π \ (Πa ∪ Πv ), on ne connait pas C (π) : on le prédit par Cb(D(π)).
+
+                Nature des données
+                Chaque donnée (D, Πa , C|Πa , Πv , C|Πv ,) peut être fausse, bruitée,
+                incomplète, non indépendante, etc.
+                L’estimation est une approximation et la construction de l’estimateur peut
+                être une heuristique !
+SPLEX Statistiques pour la classification et fouille de données en génomique   Apprentissage statistique                  7 / 48
+   Simplifier les notations
+    Généralement, le problème de classification prendra la forme suivante :
+             Soit une v.a. X (de dimension d) à valeurs dans R (D = Rd ),
+                                                                                     discrète (classification : C ⊂ Z)
+             Soit une v.a. Y (de dimension 1)
+                                                                                     continue (régression : C ⊆ R).
+             Πa ∪ Πv est une base de N observations (Xi , Yi ) de ces variables.
+                   2
+               X                                                                 Π
+
+
+                                                                      D(.)            C (.)                                 D(π)            C (π)
+                       X1
+                                                                                                             π1           X11         X12   Y1
+                                                                       D                 C                   π2           X21         X22   Y2
+                                                                                                             π3           X31         X32   Y3
+                                        X2
+                                                                                                             ···                ···         ···
+                                                                                                             πn           XN1         XN2   YN
+
+                                                         1
+                                                     X
+                             XN
+
+
+
+
+    Le problème de la classification (et de la régression)
+                   Soit x une instantiation de X , quelle valeur prendrait y = Cb(x) ?
+
+SPLEX Statistiques pour la classification et fouille de données en génomique                Apprentissage statistique                             8 / 48
+   Deux approches de la classification supervisée
+
+    Approches non paramétriques
+             Pas d’hypothèse sur le modèle des données,
+             Seuls les exemples mènent vers Cb.
+    Exemple : méthode des k plus proches voisins, fenêtre de Parzen.
+
+
+    Approches paramétriques
+             À partir de l’hypothèse forte de l’existence d’un modèle,
+             Phase d’estimation des paramètres du modèle : Θ,  b
+             Cb est alors Cbb .      Θ
+    Exemple : Régression, Classification bayésienne
+
+    Pour la suite du cours (sauf si précisé), on simplifiera la tâche de classification à la
+    discrimination entre 2 classes seulement : Y peut prendre les valeurs −1 et 1.
+    Le classifieur Cb se décompose alors en 2 fonctions : g : Rd → R et Cb = σ(g ).
+
+SPLEX Statistiques pour la classification et fouille de données en génomique   Apprentissage statistique   9 / 48
+             Évaluations et Comparaisons de Classifieurs
+
+
+
+
+Évaluations et Comparaisons de Classifieurs                10 / 48
+Évaluation d’un classifieur
+Quelles propriétés peut-on demander pour Cb ?
+
+Critère : précision
+Un classifieur doit minimiser le taux d’erreur lors de son utilisation. ( ?)
+
+
+Critère : compréhensibilité
+Un classifieur représentant une base doit être intelligible :
+      expliquable (et donc exploitable),
+      compréhensible (par un expert),
+      paramètrable (par un expert).
+
+
+Critère : rapidité
+Les opérations sur le classifieur doivent être facilitées.
+      Construction aisée,
+      Mise à jour aisée (incrémentale),
+      Critère de classification rapide.
+   Évaluations et Comparaisons de Classifieurs                                11 / 48
+Méthodologie
+
+                                                                                          algo i
+
+
+
+
+                                             Apprentissage
+                                                                    Πa
+                                                                                        Cbi
+                                                                    Πv
+                                                                           Validation
+     Base
+
+
+
+
+                                                                                        Cb∗
+                                                             Test
+
+
+
+                                                                     Evaluation
+
+
+
+  Évaluations et Comparaisons de Classifieurs                                                12 / 48
+Différents classifieurs
+
+
+
+
+  Évaluations et Comparaisons de Classifieurs   13 / 48
+Évaluation de Cb
+                                Ce qu’on voudrait connaı̂tre, c’est l’erreur que l’on fera en utilisant Cb au lieu de C .
+           Π
+
+
+ D(.)            C (.)          Erreur en généralisation
+                                                                                    
+  D
+         Cb(.)
+                    C
+                                                            e(Cb) = Ex C (x) ̸= Cb(x)
+
+En régression, on utilisera plutôt la distance quadratique :
+                                                                               2
+                                                     e(Cb) = Ex    C (x) − Cb(x)
+
+
+
+Toutefois, cette erreur en généralisation n’est pas atteignable. Il faut donc l’estimer.
+
+
+Erreur en apprentissage, erreur en validation
+                          P                                                                 P                        
+ea (Cb) = ∥Π1a ∥              x∈Πa δ          C (x) − Cb(x)                ev (Cb) = ∥Π1v ∥   x∈Πv δ       C (x) − Cb(x)
+                                                                   
+                                                                       1    si x ̸= 0
+                                                      où δ(x) =
+                                                                       0    si x = 0
+
+
+Mais ces erreurs expérimentales n’indiquent a priori rien d’autres que des hypothèses sur e(Cb).
+
+      Évaluations et Comparaisons de Classifieurs                                                                    14 / 48
+Erreurs des erreurs de classification
+ erreur d’apprentissage                          erreur de test de validation
+                                                                     SNv      (v )
+                                                                       i=1 {xi     }:
+                                SN a      (a)
+                                   i=1 {xi } :
+ Sur la base Πa =                                Sur la base Πv =
+
+           1 X                                          1 X
+              a   N                                      v N                    
+                       (a)       (a)                                (v )      (v )
+  ϵa =          δ Cb(xi ) − C (xi )              ϵv =        δ Cb(xi ) − C (xi )
+           Na                                           Nv
+                  i=1                                       i=1
+
+
+         On peut rendre ϵa = 0.                         ϵv = 0 est très dépendant de Πv
+                                                 (biais, approximation, etc.).
+
+       Cb peut se sur-adapter à Πa :                                 Sur-apprentissage
+              sur-apprentissage
+                                                                                          ϵv
+
+
+
+
+                                                                                          ϵa
+
+
+  Évaluations et Comparaisons de Classifieurs                                                 15 / 48
+Estimation du taux d’erreur de Cb
+Estimation sur Πa
+ ○
+ + Estimation aisée !
+ ○
+ - Sous-estimation évidente
+ ○
+ - Favorise le surapprentissage
+
+Estimation sur Πv
+ ○
+ + Estimation aisée !
+ ○
+ - Gâchis d’une partie des données classées
+ ○
+ - Données issues de la même base que Πa ⇒ risque de biais
+
+Cross-Validation, Leave-one-out, bootstrap
+Avec C (Π∗ ) bien connu, construire plusieurs Πv différents et apprendre sur
+Πa = Π∗ \ Πv ...
+ ○
+ + Plus de perte de données,
+ ○
+ + Une certaine robustesse de l’évaluation,
+ ○
+ - Cher et lent ! !
+   Évaluations et Comparaisons de Classifieurs                                 16 / 48
+LOOCV : Leave-One-Out Cross Validation
+LOOCV est un algorithme qui permet de se passer de Πv en contre-partie d’un temps de calcul beaucoup plus
+important.
+
+
+                LOOCV
+              Data : Πa
+            1 for each π ∈ Πa do
+            2               −π en apprenant sur Πa \ {π}
+                  Calculer Cd
+            3     eπ = |C−π (π) − C (π)|
+                        d
+
+            4 Calculer C
+                       b en apprenant sur Πa
+            5 alors
+                                             1 X
+                             eLOOCV (Cb) =            eπ
+                                           ∥Πa ∥
+                                                          π∈Πa
+
+
+
+Il existe bien évidemment des variantes de cet algorithme, moins gourmands car
+utilisant une partition en k sous-ensembles de Πa plutôt que d’en isoler chaque
+singleton : k-fold Cross Validation.
+
+   Évaluations et Comparaisons de Classifieurs                                                    17 / 48
+Autres indicateurs sur Πv
+
+Matrice de confusion
+Sur une base de test :
+
+                                                  C (x) = ○
+                                                          -   C (x) = ○
+                                                                      +
+                             Cb(x) = ○
+                                     -               VN          FN       VN + FN
+                             Cb(x) = ○
+                                     +               FP          VP       VP + FP
+                                                  VN + FP     FN + VP       N
+
+
+Indicateurs
+      Taux d’erreur : ev (Cb) = FP+FN
+                                  N
+      Accuracy (taux de bon classement) : VP+VN
+                                            N
+                                                VN
+      Spécificité (taux de vrai négatifs) : VN+FP
+                                                  FP
+      1−Spécificité (taux de faux positifs) : VN+FP
+                                                      VP
+      Sensibilité,Rappel (taux de vrai positifs) : VP+FN
+                     VP
+      Précision : VP+FP
+   Évaluations et Comparaisons de Classifieurs                                     18 / 48
+Coûts d’affectation
+
+Il peut être intéressant de briser la symétrie entre FP et FN.
+
+
+Matrice d’affectation
+
+                                                        C (x) = ○
+                                                                -   C (x) = ○
+                                                                            +
+                                      Cb(x) = ○
+                                              -            0             γFN
+                                      C (x) = ○
+                                       b      +           γFP             0
+ Généralement, on privilégie les erreurs de première espèce : γFP ≫ γFN
+
+
+
+On peut alors définir un coût d’un classifieur :
+
+       Indicateur de coût
+                                                        FP · γFP + FN · γFN
+                                           cout(Cb) =
+                                                                 N
+
+   Évaluations et Comparaisons de Classifieurs                                 19 / 48
+Limite des indicateurs issus de la matrice de confusion
+
+                                               c1 ○
+                                               C   -       ○
+                                                           +                   c2 ○
+                                                                               C   -     ○
+                                                                                         +
+Comment comparer                               ○
+                                               c- 40       10         et       ○
+                                                                               c- 45       5       ?
+                                               ○
+                                               + 10
+                                               c           40                  ○
+                                                                               + 20
+                                                                               c          30
+
+  eV (C
+      c1 ) = 0.2 et eV (C
+                        c2 ) = 0.25
+                                                                                               ⇒C
+                                                                                                c1 ≻ C
+                                                                                                     c2
+
+
+                                                       ○
+                                                       -        ○
+                                                                +
+  Avec la matrice de coût : ○
+                             -
+                             c                         0        10 , cout(C
+                                                                          c1 ) = 1.1 et cout(C
+                                                                                             c2 ) = 0.7
+                             ○
+                             +
+                             c                         1        0
+                                                                                               ⇒C c1 ≺ Cc2
+PS : Comparer eV revient à utiliser une matrice de coût avec γFP = γFN = 1.
+Doit-on tester pour toutes les matrices de coût possible ?
+Comment comparer globalement les modèles sans coût ?
+
+    Évaluations et Comparaisons de Classifieurs                                                       20 / 48
+Cas de classes déséquilibrées
+
+Matrice de confusion – COIL’00 – Challenge police d’assurance
+                                                   Cb   ○
+                                                        -      ○
+                                                               +
+                     Sur une base de test :        ○
+                                                   c-   3731   31
+                                                   ○
+                                                   +
+                                                   c     229   9
+
+
+
+ eV (Cb) = 229+31
+            4000
+ eV (Toujours ○)
+              c- = 31+9              4000                                                       Cb ≺ Toujours ○
+                                                                                                              -
+                                                                                                              c
+
+Au lieu de se limiter à des critères sur l’affectation proposée, il s’agirait de mesurer la propension à être dans
+une classe.
+Un classifieur est souvent composé de :
+       Une fonction g : D −→ R
+       Une fonction σ : R −→ C (fonction signe si classificateur binaire)
+
+
+
+                    Quand Cbi (x) = σ(gi (x)), il faudrait comparer g1 et g2 ! ! !
+
+
+    Évaluations et Comparaisons de Classifieurs                                                                  21 / 48
+Courbe de ROC
+
+Courbe de ROC : Receiver Operating Characteristic
+     Outil d’évaluation et de comparaison de classifieurs,
+     Outil graphique (aisément lisible),
+     Indépendant des matrices de coûts,
+     Utilisable dans le cas de classes déséquilibrées,
+     Indicateur synthétique associé (aisément interprétable).
+
+
+
+
+  Évaluations et Comparaisons de Classifieurs                      22 / 48
+Construction de la courbe de ROC
+Soit Cb(x) = σ(g (x)).
+Soit B> la base des x ∈ Πa , classés par valeur croissante de g (x).
+On construit alors une famille de classifieurs Cbk , k ∈ {0, · · · , |Πa |}, définis ainsi :
+
+               ∀k ∈ {0, · · · , |Πa |} , Cbk = {classer ○
+                                                        - les x de rang≤k dans B> }
+
+    Rappel :
+                                     FP
+           1−Spécificité (TFP) : VN+FP
+                                  VP
+           Sensibilité (TVP) : VP+FN             Cb0 : sensibilité=1 et spécificité=0
+                                                  Cb|Π | : sensibilité=0 et spécificité=1
+                                                      a
+
+
+
+
+   Construction de la courbe de ROC
+   ∀k ∈ {0, · · · , |Πa |}, afficher le point
+         (1−spécificité(Ck ),sensibilité(Ck ))
+
+
+   Évaluations et Comparaisons de Classifieurs                                                23 / 48
+construction de la courbe de ROC (1)
+
+
+
+
+From : Ricco RAKOTOMALALA – Laboratoire ERIC
+   Évaluations et Comparaisons de Classifieurs   24 / 48
+construction de la courbe de ROC (2)
+
+
+
+
+From : Ricco RAKOTOMALALA – Laboratoire ERIC
+   Évaluations et Comparaisons de Classifieurs   25 / 48
+Utilisation de la courbe de ROC (1)
+                                                     1   Tout classifieur est un point dans l’espace ROC.
+                                                          (0, 1) : Classifieur parfait.
+                                                          (1, 1) : Classifieur “toujours ○”.
+                                                                                         +
+                                                          (0, 0) : Classifieur “toujours ○”.
+                                                                                         -
+                                                          (q, q) : Classifieur “proba(Cb(x) = ○)
+                                                                                              + = q”.
+                                                     2 Une famille de classifieurs Cbk doit avoir sa
+                                                    courbe de ROC au dessus de la première diagonale
+                                                    (x = y ).
+                                                    Puisque cette première diagonale correspond aux classifieur
+                                                    aléatoires.
+
+
+ 3   critère AUC Area Under Curve
+       Pour la diagonale : AUC = 12
+       Pour le test idéal, AUC = 1
+       Pour un test quelconque, 12 ≤ AUC ≤ 1. Plus
+       il est grand, mieux c’est.
+AUC indique la probabilité pour que Cb interclasse un positif et un
+négatif.
+
+
+     Évaluations et Comparaisons de Classifieurs                                                                  26 / 48
+Utilisation de ROC (2) : comparaison de classifieurs
+
+
+1  Dominance
+Si ROCM1 ≻ ROCM2 alors il ne peut pas exister
+de situation (quelque soit le coût) où M2 serait
+un meilleur classifieur que M1.
+
+
+
+
+2   Enveloppe convexe
+Les classifieurs ne participant jamais à
+l’enveloppe convexe sont dominés et peuvent
+être éliminés.
+      M1 dominé
+      M4 dominé par max(M2, M3)
+
+
+    Évaluations et Comparaisons de Classifieurs       27 / 48
+                          Aggrégations de Classifieurs
+
+
+
+
+Aggrégations de Classifieurs                             28 / 48
+Introduction au bootstrap
+
+Principe
+Problème : Quelle est la distribution d’un estimateur calculé à partir d’un échantillon L ?
+Si on connait la distribution de l’échantillon ou si on peut faire l’hypothèse d’une
+distribution gaussienne, pas de problèmes. Mais sinon ?
+
+But du bootstrap : Remplacer des hypothèses probabilistes pas toujours vérifiées
+ou même invérifiables par des simulations et donc beaucoup de calcul.
+
+Exemple : L = {x1 , · · · , xn } suffit à calculer x̄, estimateur de µ.
+Comment estimer sa précision (son écart-type) ? son biais ?
+                                        2
+  1   iid + TCL ⇒ X ∼ N (µ, σn ).
+  2   Soit (Lj )j∈J une famille d’échantillons.
+                              ⇒ on peut estimer ces statisiques à partir des (x̄j )j∈J .
+  3   Soit L l’unique échantillon utilisable ⇒ calculer un ensemble d’échantillons
+      bootstrap.
+
+        Aggrégations de Classifieurs                                                     29 / 48
+Bootstrap : points de repères
+
+
+   Bradeley Erfon, 1979. Erfon & Tibshirani, 1993.
+
+
+
+
+   Origine du nom : Inspirée du baron de Münchausen
+   (Rudolph Erich Raspe) qui se sortit de sables mouvants
+   par traction sur ses tirants de bottes.
+
+
+
+
+   Popularisé avec la montée en puissance de l’ordinateur dans les calculs
+   statistiques.
+   Basé sur une théorie mathématique bien rôdée.
+
+
+
+     Aggrégations de Classifieurs                                             30 / 48
+Échantillon bootstrap
+
+     General Bootstrap Algorithm
+   Data : L échantillon,θ paramètre à estimer sur L,
+ 1 for b ∈ {1, · · · , B} do
+ 2     Tirer aléatoirement Lb , un échantillon avec remise dans L
+ 3     Estimer θ bb sur l’échantillon Lb
+
+ 4        b1 , · · · , θ
+     Le = θ            bB                est un échantillon bootstrap issu de L.
+
+
+                                                       On peut alors utiliser Le pour estimer des
+                                                       statistiques de la distribution de
+                                                       l’estimateur de θ :
+                                                                          PB b           PB b 2
+                                                                b2B = B−1
+                                                         σ2θb ≈ σ      1
+                                                                             b=1 θb − B
+                                                                                        1
+                                                                                           b=1 θb
+
+
+                                                         Intervalle de confiance, biais, quantiles,
+                                                       tests d’hypothèses, etc.
+
+         Aggrégations de Classifieurs                                                                31 / 48
+Considérations sur le bootstrap
+
+          Le ne remplace pas L.
+          Le est utilisé pour estimer des paramètres d’un estimateur basé sur L ! !
+
+  Le bootstrap ne peut pas s’appliquer si :
+    Échantillon L trop faible
+    Données trop bruitées
+    Dans le cas de dépendances structurelles dans L (par exemple, séries
+    temporelles, problèmes 2D,etc.)
+
+
+  Comment choisir B = Lb ?
+
+
+  Un grand nombre de versions légèrements différentes.
+Par exemple, Jackknife : extraire les n sous-listes de L de taille n − 1.
+
+
+       Aggrégations de Classifieurs                                                32 / 48
+Méthodologie et aggrégations
+                                                                                    algo i
+
+
+
+
+                                       Apprentissage
+                                                              Πa
+                                                                                  Cbi
+                                                              Πv
+                                                                     Validation
+    Base
+
+
+
+
+                                                                                  Cb∗
+                                                       Test
+
+
+                                                               Evaluation
+
+ Est-ce que choisir Cb∗ parmi les Cbi a un sens ?
+ Y a-t-il vraiment un ’meilleur’ ?
+       Aggrégations de Classifieurs                                                    33 / 48
+Aggrégations
+
+Soit un certain nombre de classifieurs (Cbi )i∈I pour une même classification C .
+Chaque Ci est plus ou moins précis. Ils sont également plus ou moins stables.
+
+Stabilité
+Un classifieur Cb est instable quand de petites modifications dans Πa peuvent entraı̂ner de
+grandes modifications dans la classification proposée par Cb.
+
+Les statistiques nous ont appris que moyenner les résultats est un bon moyen de réduire
+la variance (l’instabilité).
+Est-il possible de combiner les (Cbi )i∈I de manière à obtenir un meilleur classifieur ?
+
+Aggrégation majoritaire
+En considérant chaque Cbi comme un ’expert’, une manière d’aggréger leurs avis est de
+les faire voter et de choisir l’avis majoritaire :
+
+                                        Cbmaj (x) = arg max   Cbi (x) = c, i ∈ I
+                                                  c∈{ ○,
+                                                      + ○}
+                                                         -
+
+
+
+
+        Aggrégations de Classifieurs                                                 34 / 48
+Aggrégations avec poids
+On peut raffiner l’aggrégation majoritaire en introduisant des poids associés à
+l’expert.
+
+Aggrégation majoritaire avec poids
+                                                                             P
+Pour chaque Cbi , on note wi son poids associé,alors Cbw (x) = arg max                    wi
+                                                              c∈{ ○,
+                                                                  + ○}
+                                                                     - (       i∈I
+                                                                                       )
+                                                                           Cbi (x)=c
+
+
+
+Pour fixer les poids, on s’attend à ce qu’un expert qui donne souvent la bonne
+réponse ait un poids ’élevé’.
+
+  Adaptation des poids
+                                           Si β = 0, algorithme dit de Halving.
+  Data : β ∈ [0, 1)                        Si β = 12 , avec k le nbr minimal d’erreurs
+1 ∀i, wi = 1                               faites par un Cbi sur Πa , n le nombre de Cbi ,
+2 foreach π ∈ Πa do                        et M le nombre d’erreurs faite par Cw ,
+3     if Cbi (π) ̸= C (π) then
+4          wi = β · w i                               M ≤ 2.4 (k + log2 (n))
+
+
+
+        Aggrégations de Classifieurs                                                           35 / 48
+Bagging
+                                                                                               (i)
+Pour le bagging, on considère qu’il faut constituer des ensembles Πa spécifiques
+pour estimer chaque classifieur Cbi (qui peuvent être alors de même type) et
+moyenner les résultats : ça ressemble à du bootstrap.
+
+Bootstrap aggregating
+         
+      (i)
+Soit Πa                  une famille d’échantillons bootstrap (avec remise), alors :
+                  i∈I
+
+
+                  ∀i ∈ I, Cbi est estimé sur Π(i)
+                                               a              et     Cbagging (x) = Cbmaj (x)
+
+
+Si les Cbi sont effectivement des classifieurs de même type, heuristiquement, il doivent être instable afin que
+chaque échantillon bootstrap fournisse un classifieur différent.
+
+
+Convergence et généralisation
+      Pas de preuve de convergence.
+      Pas de borne connue pour l’erreur de généralisation.
+      En pratique, souvent excellents résultats (XGBoost, Random Forest).
+          Aggrégations de Classifieurs                                                                       36 / 48
+Modèles additifs
+
+  Dans les classifieurs majoritaires à poids, la classification s’effecture comme
+espérance de plusieurs classifieurs, éventuellement pondérés.
+
+ Il s’agit donc de choisir chaque classifieur et son poids associé de manière à
+améliorer le résultat global.
+
+  idée : au lieu de construire les classifieurs ’indépendamment’, il serait pertinent
+de construire incrémentalement chaque classifieur afin qu’il s’intéresse
+particulièrement aux points pour l’instant mal classés.
+
+  idée : ça pourrait marcher même avec des classifieurs faibles.
+
+➽ Définition (Classifieur faible (weak classifier))
+Un classifieur faible est un classifieur a peine plus précis que le classifieur aléatoire.
+
+
+  C’est le principe des algorithmes de boosting.
+
+        Aggrégations de Classifieurs                                                  37 / 48
+Boosting : principes
+
+principe : un nouveau classifieur doit se concentrer sur les éléments de Πa mal
+classés pour l’instant.
+
+Boosting schématique
+  1   Affecter un poids à chaque π ∈ Πa
+  2   Proposer un classifieur faible (“xi <...”, “règle d’or“, ”rule of thumb“)
+  3   Modifier les poids pour tenir compte de ce nouveau classifier
+  4   Recommencer T fois les 2 derniers points.
+  5   Combiner tous les classifieurs dans Cbboosting
+
+
+Deux questions (au moins) :
+      Comment mettre à jour les poids ?
+      Comment combiner correctement tous ces classifieurs ?
+
+
+        Aggrégations de Classifieurs                                              38 / 48
+    Erreur en généralisation
+                                                            
+    On rappelle : eP (Cb) = EP C (x) ̸= Cb(x) où P probabilité sur Π.
+
+       En particulier, si Cb est un classifieur faible, e(Cb) ≤ 21 − γ, γ > 0 : Cb est un peu meilleur que le classifieur
+    aléatoire qui se trompe une fois sur deux.                                                    P
+       Pour Πa = {x1 , · · · , xn }, on notera D(xi ) le poids associé à xi . D(.) probabilité ( i D(xi ) = 1).
+
+
+    AdaBoost (Freund & Schapire, 1995)
+1 ∀xi , D1 (x1 ) = n1
+2 soit Cb1 un premier classifieur faible
+3 repeat
+                                            ϵt
+4      Calculer ϵt = eDt (Cbt ) et βt = 1−ϵ       <1
+                                              t
+
+                       Dt (xi )      si Ct (xi ) ̸= C (xi )
+                                        b
+5      Dt+1 (xi ) ∝
+                       βt · Dt (xi ) sinon
+6      Estimer Ct+1 un classifieur faible minimisant eD
+                  b
+                                                                              t+1
+
+7 until condition d’arrêt (T fois par exemple);                                          αt en fonction de eDt (Cbt )
+                     P b
+                    
+8 Cboosting (x) = σ     αt Ct (x) avec αt = 21 log β1t
+                                    t
+
+
+              Aggrégations de Classifieurs                                                                         39 / 48
+AdaBoost : un exemple (”A Tutorial On Boosting“, Freung,Y. & Schapire,R.)
+
+
+
+
+       Aggrégations de Classifieurs                                   40 / 48
+AdaBoost : un exemple (”A Tutorial On Boosting“, Freung,Y. & Schapire,R.)
+
+
+
+
+                                              1     1 − ϵ1
+                                       α1 =     log
+                                              2       ϵ1
+
+       Aggrégations de Classifieurs                                   41 / 48
+AdaBoost : un exemple (”A Tutorial On Boosting“, Freung,Y. & Schapire,R.)
+
+
+
+
+                                              1     1 − ϵ2
+                                       α2 =     log
+                                              2       ϵ2
+
+
+       Aggrégations de Classifieurs                                   42 / 48
+AdaBoost : un exemple (”A Tutorial On Boosting“, Freung,Y. & Schapire,R.)
+
+
+
+
+                                              1     1 − ϵ3
+                                       α3 =     log
+                                              2       ϵ3
+
+
+       Aggrégations de Classifieurs                                   43 / 48
+AdaBoost : un exemple (”A Tutorial On Boosting“, Freung,Y. & Schapire,R.)
+
+
+
+
+       Aggrégations de Classifieurs                                   44 / 48
+bagging vs boosting
+
+Les 2 méthodes ont en commun une augmentation de la stabilité du classifieur, au
+prix d’un temps de calcul plus important. Voici quelques généralités à ne pas
+prendre pour vérités absolues :
+    Bagging est souvent plus rapide que boosting.
+    A contrario, la réduction d’erreur est moindre pour bagging.
+    Bagging est une méthode qui fonctionne avec des ensembles de classifieurs
+    ’raisonnables’ mais peu stables (arbres de décisions par exemple).
+    Boosting utilise des classifieurs très simples et donc très faibles.
+    AdaBoost n’a plus qu’un paramètre : le nombre de classifieurs que l’on veut
+    mettre.
+    Boosting est très sensible au bruit i.e. à un grand nombre de données mal
+    classées (puisqu’il va leur donner un grand poids).
+    Comme les classifieurs faibles ont un biais important, on peut considérer le
+    boosting comme une méthode de réduction du biais.
+
+
+       Aggrégations de Classifieurs                                           45 / 48
+Boosting : erreur en généralisation
+
+Que se passe-t-il si on augmente beaucoup le nombre de classifieurs faibles ?
+  Généralement, on s’attend à :
+       Erreur d’apprentissage (sur Πa ) qui
+       tend vers 0.
+       Erreur en généralisation qui
+       remonte (sur-apprentissage,
+       overfitting)
+                                                    Comportement asymptotique des erreurs
+
+
+Expérimentalement, pour AdaBoost
+
+                                        L’erreur de test (meilleure
+                                        approximation de l’erreur en
+                                        généralisation) n’augmente pas !
+                                        Même quand l’erreur d’apprentissage
+                                        est nulle !
+
+       Aggrégations de Classifieurs                                                   46 / 48
+Boosting et marges
+                                                          P
+                                                                       
+Le boosting prend la forme : Cboosting (x) = σ                αt Cbt (x) avec αt = log β1t .
+                                                          t
+La marge est définie par min (f (x) · C (x)).
+                                       x∈Πa
+On se souvient également qu’une marge importante indique une robustesse du
+classifieur, et donc une plus faible erreur en généralisation.
+
+Boosting et marge
+
+
+                                              Quand l’erreur de test ne diminue plus,
+                                              on observe une augmentation de la
+                                              marge.
+                                              Ce comportement est théoriquement
+                                              prouvable.
+
+
+
+
+       Aggrégations de Classifieurs                                                       47 / 48
+Résumé
+
+
+
+
+   Boosting et bagging combinent les résultats d’ensembles de classifieurs.
+   A priori, ces méthodes améliorent les résultats en diminuant le biais ou la
+   variance des classifieurs.
+   Bagging est principalement une méthode de réduction de la variance, utilisé
+   avec des classifieurs à part entières.
+   Boosting se concentre sur les cas particuliers difficiles. Il réduit principalement
+   le biais et augmente la marge. Mais il est sensible au bruit.
+
+
+
+
+     Aggrégations de Classifieurs                                                  48 / 48
+

@@ -1,0 +1,771 @@
+                        SPLEX
+Statistiques pour la classification et fouille de données
+                     en génomique
+      Classification non paramétrique supervisée et non supervisée
+
+
+
+                       Pierre-Henri WUILLEMIN
+
+                             Decision-axe IA-LIP6
+                       pierre-henri.wuillemin@lip6.fr
+   Classification non paramétrique
+
+
+                Π
+                                         Classification qui ne dépend pas d’un modèle.
+                                                                   ... dont il faudrait trouver les paramètres ...
+      D(.)            C (.)
+                                       Il s’agit de trouver une description de la classe Cb(X ) à partir
+       D                 C           de X uniquement.
+              Cb(.)
+                                                           ... avec X = (x1 , · · · , xd ) : méthodes géométriques ...
+
+
+
+
+        1    non supervisée
+                 1    K -means
+                 2    Classification hiérarchique
+                 3    (Analyse de données : ACP, . . .)
+        2    supervisée
+                 1    k-PPV et fenêtre de Parzen
+                 2    Arbres de décision
+
+
+
+
+SPLEX Statistiques pour la classification et fouille de données en génomique
+                                                                          Classification non paramétrique supervisée et non supervisée   2 / 36
+   Classification non supervisée
+
+    Classification non supervisée – Formalisation
+    Généralement, le problème de classification non supervisée prendra la forme
+    suivante :
+             Soit n individus représentés par des vecteurs réels de dimension d : Xn×d
+             Soit un tableau de distance (similarités, dissimilarités) inter-individus Dn×n .
+
+
+
+
+    Objectif : Regrouper les individus en un certain nombre de classes homogènes.
+
+    • On passe de Xn×d à Dn×n grâce à une fonction de distance entre individus.
+    • On pourrait passer de Xn×d à Dd×d grâce à une distance entre variables (clustering de variables).
+
+
+SPLEX Statistiques pour la classification et fouille de données en génomique
+                                                                          Classification non paramétrique supervisée et non supervisée   3 / 36
+   Classification non supervisée (2)
+
+    Approches de la classification non supervisée
+             Approche non hiérarchique : Partitionnement en k classes (k donné)
+
+
+
+
+             Approche hiérarchique : regroupement (ou division) successif d’individus
+             (ou de groupes).
+
+
+
+
+SPLEX Statistiques pour la classification et fouille de données en génomique
+                                                                          Classification non paramétrique supervisée et non supervisée   4 / 36
+   Classification non supervisée (3) : comparer
+
+
+
+
+    Comparaison
+        1    Entre individus : distance/dissimilarité ou proximité/similarité
+        2    Entre groupes :
+                      Qualité d’un regroupement (homogénéité / différence inter-groupe) : méthode
+                      non hiérarchique
+                      Critères de fusion ou de scission : méthode hiérarchique
+
+         Le choix de ces distances/critères est crucial et hors apprentissage non
+    supervisé ! Il y a donc supervision :-)
+
+
+
+
+SPLEX Statistiques pour la classification et fouille de données en génomique
+                                                                          Classification non paramétrique supervisée et non supervisée   5 / 36
+   Distance/dissimilarité/similarité
+
+                                       Distance d(x, y )                    Dissimilarité s(x, y )                    Similarité s(x, y )
+              Positivité                d(x, y ) ≥ 0                           s(x, y ) ≥ 0                              s(x, y ) ≥ 0
+
+              Symétrie               d(x, y ) = d(y , x)                      s(x, y ) = s(y , x)                     s(x, y ) = s(y , x)
+
+               Identité                 d(x, y ) = 0                               x = y =⇒
+                                         ⇐⇒ x = y                                   s(x, y ) = 0
+              Inégalité               d(x, z) ≤
+            triangulaire               d(x, y ) + d(y , z)
+            Maximalité                                                                                                s(x, x) ≥ s(x, y )
+
+
+
+                                 1
+    • Si d(.) distance alors 1+d(.)  = s(.) similarité
+                               p
+    • Si s(.) similarité alors s(x, x) + s(y , y ) − 2 · s(x, y ) = s(.) dissimilarité
+    • etc.
+
+
+
+SPLEX Statistiques pour la classification et fouille de données en génomique
+                                                                          Classification non paramétrique supervisée et non supervisée     6 / 36
+   Choix de la métrique
+
+
+
+    Différentes métriques :
+                                                                                            P          2
+                                                                                                                           1
+                                                                                     d
+                                   euclidienne                L2         d(a, b) =       (ai − bi )2
+                                                                                   Pi=1              
+                                                                                     d
+                                  euclidienne2                L22        d(a, b) =   i=1 (ai − bi )
+                                                                                                    2
+
+                                                                                   P                 1
+                                                                                      d              p p
+                                   Minkowski                 Lp          d(a, b) =    i=1 (ai − bi )
+                                                             L∞          d(a, b) = maxdi=1 |ai − bi |
+                                                                                   Pd
+                                   Manhattan                 L1          d(a, b) = i=1 |ai − bi |
+                                      ...                     ...        ...
+
+
+
+
+SPLEX Statistiques pour la classification et fouille de données en génomique
+                                                                          Classification non paramétrique supervisée et non supervisée   7 / 36
+   K -means : partitionnement non hiérarchique
+
+    K -means
+        1    Choisir K centres de groupe (aléatoirement parmi les individus par exemple),
+        2    Allouer chaque item au groupe dont le centre est le plus proche,
+        3    Calculer les centres de gravité des groupes, qui deviennent les nouveaux
+             centres de groupe.
+        4    Répéter les 2 étapes précédentes jusque stabilisation.
+
+
+
+
+                                                 1                             2                             3                              2
+
+
+
+
+               Sensibilité à la valeur de K . Sensibilité aux centres initiaux.
+
+SPLEX Statistiques pour la classification et fouille de données en génomique
+                                                                          Classification non paramétrique supervisée et non supervisée       8 / 36
+   Analyse de K -means : groupes bien concentrés, bien
+   séparés
+    On note :                                                                               P
+    • (xi )i∈{1,··· ,n} les individus, g le centre de gravité global des individus (g = n1  i xi ) (indépendants de K )
+    • (Gk )k∈{1,··· ,K } les groupes, de centre (gk )k∈{1,··· ,K } .
+
+
+    Inerties (RSS : Residual Sum of Squares)
+                                                                                      X
+    Inertie de groupe : ∀k ∈ {1, · · · , K }, Ik =                                            d 2 (xi , gk )
+                                                                                     xi ∈Gk
+                                                                                                                  X
+                                                                                                                  K
+    fonction objectif – Inertie intra-groupe : min IG = min                                                              Ik
+                                                                                                                  k=1
+                                        P              2
+    Pour un groupe Gk , Ik =                xi ∈Gk d       (x, gk ). On peut chercher son minimum en annulant sa dérivée :
+                                           ∂Ik    X                             1 X
+                                               =      2(xi − gk ) = 0 ⇐⇒ gk =           xi
+                                           ∂gk   x ∈G
+                                                                              | G k | x
+                                                           i   k                                                  i
+
+
+    L’étape 3 correspond à la minimisation de IG étant donné une structure des groupes.
+                                                                                                                  PK
+                                                                                                                      k=1 | Gk | ·d
+                                                                                                                                            2
+    Un second critère, l’inertie inter-groupe : max IX = max                                                                                   (gk , g ).
+
+SPLEX Statistiques pour la classification et fouille de données en génomique
+                                                                          Classification non paramétrique supervisée et non supervisée             9 / 36
+   K -means : contrôles de l’algorithme
+
+    Il y a un nombre fini de partitions en k classes de n éléments + décroissance de IK . Donc la convergence vers
+    un minimum local est assurée
+
+    Critères d’arrêt
+    • Si les centres de groupe ne bougent plus trop
+    • Si IK et IX quasiment fixes
+    • Nombre maximum d’étapes
+    Si K augmente, alors IK diminue mathématiquement (minimum en K = n). Donc minimiser IK n’est pas un
+    bon critère de sélection de K .
+    Par contre, à K constant, IK permet de sélectionner parmi différents regroupements.
+
+
+    valeur de K : IsoData (par exemple) – Fusion/éclatement de groupes
+    • fusionner 2 groupes k et k ′ si d(gk , gk ′ ) < ϵF
+    • éclater un groupe g si Ik > ϵE
+               Comment choisir ϵF et ϵE !
+
+
+
+SPLEX Statistiques pour la classification et fouille de données en génomique
+                                                                          Classification non paramétrique supervisée et non supervisée   10 / 36
+   Classification ascendante hiérarchique (CAS)
+    Soit un critère d’évaluation D de la distance entre groupes, compatible avec la distance entre individus :
+                                                  D({x}, {y }) = d(x, y )
+
+
+    Hiérarchie ascendante
+        1    Soit G0 = {{xi }, ∀i ≤ n} l’ensemble des individus en singleton
+        2    Pour i de 1 à n − 1,
+        3        (G1 , G2 ) = arg min D(A, B)
+                              A,B∈Gi−1
+                 Gi = Gi−1 \ {G1 , G2 }   {G1 ∪ G2 }
+                                        S
+        4
+
+
+
+
+                 Diagramme de Venn                                                           dendogramme
+SPLEX Statistiques pour la classification et fouille de données en génomique
+                                                                          Classification non paramétrique supervisée et non supervisée   11 / 36
+   Distance entre groupes : D
+    Pour deux groupes G1 et G2 , comment calculer D(G1 , G2 ) compatible avec d entre individus ?
+
+    d(x, y ) dissimilarité
+             Saut minimum, simple linkage                                                             D(G1 , G2 ) =                 min      d(x, y )
+                                                                                                                               x∈G1 ,y ∈G2
+             Saut maximum, diamètre, complete linkage                                                D(G1 , G2 ) =                max       d(x, y )
+                                                                                                                               x∈G1 ,y ∈G2
+             Saut moyen, group average linkage
+                                                                                                               1                    X
+                                                                              D(G1 , G2 ) =                                                  d(x, y )
+                                                                                                        | G1 | · | G2 |
+                                                                                                                               x∈G1 ,y ∈G2
+
+
+    d(x, y ) distance (euclidienne)
+    avec g1 et g2 les centre de G1 et G2 ,
+             Distance des centres                                                                      D(G1 , G2 ) = d(g1 , g2 )
+                                                                                                    | G1 | · | G2 |
+             Saut de Ward                                                         D(G1 , G2 ) =                       d(g1 , g2 )
+                                                                                                n · (| G1 | + | G2 |)
+    La stratégie de Ward est la plus courante est revient à miminiser l’inertie intra-groupe et
+    maximiser l’inertie inter-groupe IX
+SPLEX Statistiques pour la classification et fouille de données en génomique
+                                                                          Classification non paramétrique supervisée et non supervisée       12 / 36
+   Méthode mixte (Lebart)
+
+
+
+
+       1   Données avant classification,
+       2   K -means avec K assez grand,
+       3   CAS sur les K groupes,
+       4   Coupure du CAS au niveau de similarité (ou
+           nombre de groupes P) fixé,
+       5   Stabilisation par P-means.
+
+
+
+
+SPLEX Statistiques pour la classification et fouille de données en génomique
+                                                                          Classification non paramétrique supervisée et non supervisée   13 / 36
+   Méthodes supervisées non paramétriques
+
+
+
+    Tâche de classification supervisée
+                                                                                                                                  Π
+
+
+    Trouver Cb : D → C telle que                                                                                         D(.)            C (.)
+
+         ∀π, Cb (D(π)) ≈ C (π) avec “le moins d’erreur possible”
+                                                                                                                          D                 C
+                                                                                                                                 Cb(.)
+
+
+
+
+             On connaı̂t la classe d’un certain nombre de points (Πa ),
+             On veut inférer la classe de tout point de D.
+                   Toujours pas de modèle, ni de paramètres ! On utilise que la carte des
+             classes sur Πa
+
+
+
+
+SPLEX Statistiques pour la classification et fouille de données en génomique
+                                                                          Classification non paramétrique supervisée et non supervisée        14 / 36
+   k-PPV ou k-nearest neighbour
+
+    Approche par voisinage
+             Trouver des points de la base qui soient similaires au point testé
+             Faire voter les points trouvés.
+    Deux approches :
+             nombre de voisins fixes : k-PPV
+             voisinage de taille fixe : fenêtre de Parzen, kernel density estimation
+
+    Fonction de vote
+                                                                         1    X
+                                                       g (x) =                  yi
+                                                                      |V (x)|
+                                                                                   xi ∈V (x)
+
+    où V (x) est le voisinage de la description x.
+
+     k-PPV : |V (x)| = k (k est le paramètre de k-PPV)
+     Parzen : V (x) = {Xi , d(x, xi ) < h} (h est le paramètre de la fenêtre de Parzen)
+
+SPLEX Statistiques pour la classification et fouille de données en génomique
+                                                                          Classification non paramétrique supervisée et non supervisée   15 / 36
+   Qualité de la classification
+
+    Qualité de l’approximation
+             k ou h petit : les voisins sont proches (donc représentatifs) mais peu nombreux (donc
+             Cb est bruitée et peu robuste)
+             k ou h grand : les voisins sont nombreux (donc lissage statistique) mais lointains
+             (donc moins fiables)
+
+
+
+
+SPLEX Statistiques pour la classification et fouille de données en génomique
+                                                                          Classification non paramétrique supervisée et non supervisée   16 / 36
+   1-PPV avec d = 2 : diagramme de Voronoı̈
+
+
+
+
+    Diagramme de Voronoı̈ [Georgi Fedoseevich Voronoı̈ (1868 - 1908)]
+    Un diagramme de Voronoı̈ (aussi appelé décomposition de Voronoı̈, partition de Voronoı̈ ou encore polygones
+    de Voronoı̈) représente une décomposition particulière d’un espace métrique déterminée par les distances à un
+    ensemble discret d’objets de l’espace, en général un ensemble discret de points.
+
+
+
+
+SPLEX Statistiques pour la classification et fouille de données en génomique
+                                                                          Classification non paramétrique supervisée et non supervisée   17 / 36
+   Efficacité de k-PPV et de Parzen
+
+    Avantages
+             Facile à implémenter
+             Pas de modèle à construire
+             Utile pour données hétérogènes, classes irrégulières, etc.
+             Version incrémentale aisée
+
+
+    Inconvénients
+             Pas de modèle, donc pas d’explication de la classification,
+             Classification lente et gourmande (garder les points en mémoire, etc.),
+             Sensible à la valeur de d : The Curse of Dimensionality [R.Bellman]
+             Sensible à la valeur de h ou k ...
+             Pour k-PPV : choix de la métrique !
+
+
+SPLEX Statistiques pour la classification et fouille de données en génomique
+                                                                          Classification non paramétrique supervisée et non supervisée   18 / 36
+   k-PPV : Fléau de la dimensionalité
+
+
+
+
+                 Curse of dimensionality
+                          Les espaces de haute dimension sont vide !
+                          À densité constante, nombre de points nécessaires : O(c d ).
+                          Les points les plus proches sont très loin !
+                          La notion de voisinage devient inutilisable.
+                          Complexité du calcul de Cb : O(n2 · d)
+
+
+
+
+SPLEX Statistiques pour la classification et fouille de données en génomique
+                                                                          Classification non paramétrique supervisée et non supervisée   19 / 36
+   Kernel Density Estimation (kde)
+    On rappelle la forme de la fonction de vote pour la fenêtre de Parzen :
+
+                                                       1         X
+                                        g (x) =                            yi avec V (x) = {Xi , d(x, xi ) < h}
+                                                    |V (x)|
+                                                               xi ∈V (x)
+
+
+
+    On peut réécrire cette fonction de vote en utilisant la fonction indicatrice de V (x) : Id(x,xi )<h = I d(x,xi )
+                                                                                                                                                 <1
+                                                                                                                                            h
+    (Ip vaut 1 si p est vraie et 0 sinon).
+
+                                                                           X
+                                                                           n
+                                                              g (x) ∝            I d(x,xi )        · yi
+                                                                                              <1
+                                                                           i=1        h
+
+
+    La généralisation consiste à changer la fonction indicatrice par une autre plus “lisse” : un noyau.
+
+
+    Méthode à noyaux (Parzen-Rozenblatt)
+                                      X
+                                      n
+                                                   d(x, xi )
+                       g (x) =               Φ(              ) · yi
+                                                      h
+                                      i=1
+
+    Exemple : noyau Gaussien N (0, 1) :
+
+                                       1   u2
+                               Φ(u) = √ e − 2
+                                       2π
+SPLEX Statistiques pour la classification et fouille de données en génomique
+                                                                          Classification non paramétrique supervisée et non supervisée       20 / 36
+   Arbre de décision
+
+    Arbre de décision
+    Un arbre de décision est une division récursive de D en région de plus en plus
+    petite.
+             Un nœud non terminal de l’arbre contient une variable (ou une fonction de
+             plusieurs variables si découpage oblique).
+             Un arc contient une valeur possible du nœud parent.
+             Une feuille représente une région déterminée par les valeurs des variables de
+             son chemin depuis la racine et y attribue la classe majoritaire dans cette
+             région.
+
+                                                                                               La classification par arbre de
+                                                                                               décision s’effectue par une série
+                                                                                               de tests des valeurs de x suivant
+                                                                                               les nœuds depuis la racine vers
+                                                                                               une feuille de l’arbre. La classe
+                                                                                               dans la feuille obtenue est Cb(x).
+
+SPLEX Statistiques pour la classification et fouille de données en génomique
+                                                                          Classification non paramétrique supervisée et non supervisée   21 / 36
+   Classifications par arbre de décision
+    Avantages
+             Classification aisée et rapide
+             Interprétation aisée (règles)
+             Permet d’hybrider variables qualitatives/quantitatives
+
+    Inconvénients
+             Principalement : manque de robustesse (sensibilité au bruit) ⇒ instabilité !
+             Mais aussi : difficulté d’optimisation : quel est le meilleur arbre ?
+             Concision vs exactitude : quand arrêter l’arbre ? feuilles représentant des
+             régions non pures ?
+
+
+
+
+                                                                               ou
+
+
+
+SPLEX Statistiques pour la classification et fouille de données en génomique
+                                                                          Classification non paramétrique supervisée et non supervisée   22 / 36
+   Pureté d’une région
+
+    Région, pureté d’une région
+                Π              Une région de D est un R ⊂ D.
+                               Une région R est dite ”pure”, de classe c si C D −1 (R) = {c}.
+                                                                                      
+      D(.)            C (.)
+
+                               La
+                                 pureté d’une région se mesure donc par rapport à l’ensemble
+       D
+              Cb(.)
+                         C
+                              C D −1 (R)
+
+
+
+
+    Dans le cadre de l’apprentissage supervisé, on ne connaı̂t que C D −1 (R ∩ Πa ) , donc une approximation.
+                                                                                   
+
+
+
+
+SPLEX Statistiques pour la classification et fouille de données en génomique
+                                                                          Classification non paramétrique supervisée et non supervisée   23 / 36
+   Induction d’arbre de décision
+    Question : comment apprendre un tel arbre ?
+    Principe à suivre : Rasoir d’Occam ou principe de Parcimonie.
+    D’un point de vue général, induire un arbre consiste à proposer récursivement en chaque nœud de l’arbre une
+    séparation de la région représentée par ce nœud.
+    Beaucoup d’algorithmes différents : ITI, ID3, C4.5 (1993), CART (1984), etc.
+
+
+
+    Principe général de l’algorithme
+    Le critère de séparation d’une région le plus intéressant est celui qui augmentera le
+    plus la pureté des régions obtenues.
+    Soit un nœud N, P(c | N) ∝ C D −1 (RN ∩ Πa )
+                                                
+
+
+
+
+    Mesurer l’impureté du nœud N
+             Nombre de mal classés dans N : Erreur (N) = 1 − maxc P(c | N)
+                                                          P
+             Évaluation de la dispersion : Gini(N) = 1 − c P(c | N)2
+                                                           P
+             Évaluation de l’information : Entropy (N) = − c P(c | N) · log2 P(c | N)
+
+SPLEX Statistiques pour la classification et fouille de données en génomique
+                                                                          Classification non paramétrique supervisée et non supervisée   24 / 36
+   Comportements des 3 indices d’impureté
+
+
+
+
+SPLEX Statistiques pour la classification et fouille de données en génomique
+                                                                          Classification non paramétrique supervisée et non supervisée   25 / 36
+   Digression culturelle : information et entropie statistique
+
+    Soit une expérience de probabilité simple : un gain se trouve dans une des boites numérotées de 1 à n. Il y a
+    équiprobabilité d’occurrence des n positions pour le gain.
+
+
+
+                                                                                X        ···
+
+                                                           1      2      3      4                    n
+
+
+
+
+    ➽ Définition (Le nombre d’information H – Hartley, 1928)
+    Le nombre d’information H(n) est la quantité d’information reçue en apprenant où
+    se trouve le gain. Elle est équivalente à la quantité d’incertitude expérimentée au
+    début de l’expérience (sans connaissance).
+
+
+    H(n) doit nécessairement avoir quelques propriétés.
+    Par exemple, H(1) = 0
+
+
+
+
+SPLEX Statistiques pour la classification et fouille de données en génomique
+                                                                          Classification non paramétrique supervisée et non supervisée   26 / 36
+   Propriétés de H
+
+    Quelques propriétés de H
+     1 H(1) = 0
+     2 Arbitrairement, H(2) = 1
+     3 Monotonie : H(n) ≤ H(n + 1)                                                                        (n augmente ⇒l’incertitude grandit.)
+     4 H(n · m) ?
+                                                                 1    2     3     4                   n
+                                                            1                            ···
+
+
+                                                            2                     X      ···
+                                                                 .                        .           .
+                                                                 .                            .       .
+                                                                 .                                .   .
+
+                                                            m                            ···
+
+
+    Additivité : H(n · m) = H(n) + H(m)
+
+
+    Théorème
+    H(n) = log2 (n) = − log2 ( n1 ) vérifie ces conditions et est la seule si on
+    considère n et m rationnels en 4 .
+
+SPLEX Statistiques pour la classification et fouille de données en génomique
+                                                                          Classification non paramétrique supervisée et non supervisée   27 / 36
+   Entropie de Shannon (1948)
+    Plutôt que définir l’information apportée par le résultat d’une expérience, il s’agit de mesurer la quantité
+    moyenne d’information contenue dans une loi de probabilité.
+                                                                              m
+    Soit une v.a. binaire X tel que P(X = 0) = p, p rationnel : p = m+n          .
+                                                                           p               1-p
+
+
+                                                                     X=0                         X=1
+
+
+
+
+                                                                     ···                         ···
+
+                                                         1       2         m               m+1         m+n
+       Quantité d’information par la position du gain parmi m + n : H(m + n) = log2 (m + n)
+       Quantité d’information par X = 0 : H(m + n) − H(m)                             (position du gain parmi m superflue)
+       Quantité d’information par X = 1 : H(m + n) − H(n)                              (position du gain parmi n superflue)
+       En moyenne : p(H(m + n) − H(m)) + (1 − p)(H(m + n) − H(n)) = −p log2 (p) − (1 − p) log2 (1 − p)
+
+
+
+
+    ➽ Définition (Entropie de Shannon)
+                                                          X
+                             h(p1 , · · · , pn ) = −             pi · log2 (pi )
+                                                             i
+
+
+
+
+SPLEX Statistiques pour la classification et fouille de données en génomique
+                                                                          Classification non paramétrique supervisée et non supervisée   28 / 36
+   Induction d’arbre
+
+    Algorithme général
+    Procedure DevelopperNoeud(D,N)
+      Déterminer la variable V de coupure
+                (en fonction de l’indice d’impureté)
+      Étiqueter N avec cette variable V
+      Créer les fils de N (valeurs de la variable V)
+      Pour tout fils F
+         Créer DF sous-région de D vérifiant F
+         Si critère de terminaison sur F alors
+           F est une feuille
+           F a pour classe la classe majoritaire dans DF
+         Sinon
+           DevelopperNoeud(DF,F)
+         FinSi
+      FinPour
+    Fin
+
+
+SPLEX Statistiques pour la classification et fouille de données en génomique
+                                                                          Classification non paramétrique supervisée et non supervisée   29 / 36
+   Déterminer la variable de coupure
+
+    On sait calculer l’impureté d’une région dans un nœud : I (N).
+
+
+    ➽ Définition (Gain)
+    Le gain représente la diminution d’impureté entre un nœud et ses fils :
+       soit V la variable coupé en N,
+       soit Nv le fils de N où V vaut v ,
+
+                                                                                    X |Rv |
+                                                ∆(N, V ) = I (N) −                                   · I (Nv )
+                                                                                             |R|
+                                                                                    v ∈V
+
+
+
+    Si I (N) est l’entropie, on appelle ∆info = H(V |N) le gain d’information.
+
+
+    Détermination de la variable de coupure
+    On sélectionne la variable de coupure en cherchant la variable maximisant le gain.
+
+
+SPLEX Statistiques pour la classification et fouille de données en génomique
+                                                                          Classification non paramétrique supervisée et non supervisée   30 / 36
+   Exemple de calcul de gain
+
+
+
+
+SPLEX Statistiques pour la classification et fouille de données en génomique
+                                                                          Classification non paramétrique supervisée et non supervisée   31 / 36
+   Gain Ratio
+
+
+
+
+    Les calculs de gain favorisent évidemment les variables avec beaucoup de modalité.
+    Il faudrait donc prendre en compte de l’information de branchement :
+
+    ➽ Définition (Gain Ratio)
+                                                      ∆(N, V )            ∆(N, V )
+                        ∆Ratio (N, V ) =                       =P
+                                                       H(V )     V ∈V P(V = v ) log2 P(V = v )
+
+
+
+
+SPLEX Statistiques pour la classification et fouille de données en génomique
+                                                                          Classification non paramétrique supervisée et non supervisée   32 / 36
+   Critères de terminaison
+
+    L’algorithme est arrivé à une feuille si
+             La région du nœud est pure (ou seuil)
+             La région devient trop petite (avec seuil)
+             Pas de gain d’information (ou seuil)
+             Toutes les variables ont été instanciées
+             La hauteur de l’arbre atteint un seuil
+             L’algo. arrive à une taille de description minimale
+
+
+    ➽ Définition (MDL : Minimum Description Length)
+    Dans un arbre de décision T ,
+                                                                                                   X
+                                           MDL(T ) = α · Taille(T ) +                                           I (f )
+                                                                                              f feuille deT
+
+
+
+
+SPLEX Statistiques pour la classification et fouille de données en génomique
+                                                                          Classification non paramétrique supervisée et non supervisée   33 / 36
+   Élagage d’un arbre
+
+    Un autre algorithme possible :
+        1    Construire l’arbre le plus précis possible (critère d’arrêt minimum)
+        2    Élaguer : remplacer des branches de l’arbre par une feuille.
+    L’élagage est un processus itératif, Bottom-Up qui se termine quand aucune
+    branche n’est plus élagable.
+
+    Quand élaguer ?
+    En fonction de l’erreur de classification : si la feuille (classe majoritaire) provoque
+    moins d’erreur de classification que les branches.
+
+    Estimation de l’erreur de classification
+             Validation croisée
+             En utilisant Πv
+             Estimation statistique (χ2 , intervalle de confiance, etc.)
+
+
+SPLEX Statistiques pour la classification et fouille de données en génomique
+                                                                          Classification non paramétrique supervisée et non supervisée   34 / 36
+   Algorithmes principaux
+
+
+
+
+             ID3 (Induction Decision Tree, Quinlan 1979) :
+                      uniquement sur des variables discrètes (arbre de discrimination),
+                      critère de gain : entropie
+             C4.5 (Quinlan 1993) :
+                      extension d’ID3 à des variables continues (arbre de régression),
+                      gestion des valeurs manquantes
+             CART (Classification And Regression Tree, Breilan et al 1984) :
+                      critère de gain : indice de Gini
+
+
+
+
+SPLEX Statistiques pour la classification et fouille de données en génomique
+                                                                          Classification non paramétrique supervisée et non supervisée   35 / 36
+   Variables continues : Arbre multivarié
+
+
+
+
+SPLEX Statistiques pour la classification et fouille de données en génomique
+                                                                          Classification non paramétrique supervisée et non supervisée   36 / 36
+

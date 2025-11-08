@@ -1,0 +1,969 @@
+                        SPLEX
+Statistiques pour la classification et fouille de données
+                     en génomique
+       Classification probabiliste - Classification Linéaire Binaire
+
+
+
+                       Pierre-Henri WUILLEMIN
+
+                             Decision-axe IA-LIP6
+                       pierre-henri.wuillemin@lip6.fr
+   Rappels : Variables aléatoires et probabilités
+
+    Soient X et Y deux variables aléatoires sur Ω.
+
+    ➽ Définition
+             loi marginale de X
+             p(X = x) = p({X = x} | Ω)
+             loi jointe de X et Y
+             p(X = x, Y = y ) = p({X = x} ∩ {Y = y } | Ω)
+             loi conditionnelle de X sachant Y
+             p(X = x | Y = y ) = p({X = x} | {Y = y } , Ω)
+
+
+    Propriété
+                                       P
+                                             p(X = x | Y = y )                       =1
+                                         x
+                                       P
+                                             p(X = x | Y = y )                       ̸= 1
+                          P              y
+                               p(X = x, Y = y | Z = z)                               = p(Y = y | Z = z)
+                           x
+
+
+
+
+SPLEX Statistiques pour la classification et fouille de données en génomique
+                                                                            Classification probabiliste - Classification Linéaire Binaire   2 / 33
+   Rappels : Probabilités, fonctions — théorème de Bayes
+
+
+             p(X = x|Y = y ) ∈ [0, 1] est une probabilité.
+             p(X |Y = y ) est une distribution de probabilité (une fonction).
+             p(X |Y ) est une famille de distributions de probabilités sur des espaces différents.
+    Il y a une différence de nature entre p(X | Y ) et p(Y | X ). On connaı̂t néanmoins un rapport entre ces
+    grandeurs :p(X , Y ) = p(X | Y ) · p(Y ) = p(Y | X ) · P(X )
+
+
+
+
+    Théorème (de Bayes)
+                                                                               p(Y | X ) · p(X )
+                                                        p(X | Y ) =
+                                                                                    p(Y )
+                                            p(Y |X ,Z )·p(X |Z )
+    ou encore : p(X | Y , Z ) =                  p(Y |Z )
+
+
+
+
+SPLEX Statistiques pour la classification et fouille de données en génomique
+                                                                            Classification probabiliste - Classification Linéaire Binaire   3 / 33
+   Rappels : Variables aléatoires et indépendances
+
+    Soient X , Y et Z des variables aléatoires sur Ω.
+
+    ➽ Définition (Indépendance conditionnelle)
+              Y | Z selon p si et seulement si p(X |Y , Z ) = p(X |Z )
+        |=
+
+
+
+
+    X
+
+    ➽ Définition (indépendance marginale)
+              Y selon p si et seulement si p(X |Y ) = p(X )
+        |=
+
+
+
+
+    X
+
+    p(X |Y , Z ) = p(X |Z ) peut se lire :
+    Augmenter notre état de connaissance Z en apprenant Y n’influence pas la distribution de probabilité qu’on
+    attribue à X .
+
+                                                                          Y | Z si et seulement si Y               X |Z.
+                                                                     |=
+
+
+
+
+                                                                                                              |=
+    À noter que cette relation est symétrique : X
+
+
+                                          Y alors p(X , Y ) = p(X | Y ) · p(Y ) = p(X ) · p(Y )
+                                     |=
+
+
+
+
+    On remarque que, si X
+                               Y | Z alors p(X , Y | Z ) = p(X | Y , Z ) · p(Y | Z ) = p(X | Z ) · p(Y | Z )
+                          |=
+
+
+
+
+    De même, si X
+
+
+
+SPLEX Statistiques pour la classification et fouille de données en génomique
+                                                                            Classification probabiliste - Classification Linéaire Binaire   4 / 33
+   Approche probabiliste de la classification
+
+    Soient, à nouveau, deux v.a. X (de dimension d) discrète et Y (de dimension 1)
+    discrète (pas forcément binaire).
+    Sur la base Πa , on peut estimer les probabilités par des fréquences pour P(X , Y ).
+    Soit x une instantiation de X , on cherche sa classe y (valeur de Y ).
+
+      1    Maximum de vraisemblance
+                                                             ∗
+                                                            yML = arg max P(x | yi )
+                                                                                   yi
+
+
+      2    Maximum a posteriori
+                                                           ∗
+                                                          yMAP = arg max P(yi | x)
+                                                                                    yi
+
+    D’après la règle de Bayes, P(Y | X ) ∝ P(X | Y ) · P(Y ), on comprend que l’intérêt du MAP est de prendre
+    en compte un a priori sur la fréquence de chaque classe.
+
+               Il peut être difficile d’obtenir ces distributions.
+               Particulièrement : P(X | Y ) peut demander beaucoup d’observation ! !
+
+SPLEX Statistiques pour la classification et fouille de données en génomique
+                                                                            Classification probabiliste - Classification Linéaire Binaire   5 / 33
+   Exo 1 : français ou suédois ?
+    On considère deux attributs pour déterminer la nationalité d’un individu.
+    L’attribut taille qui peut prendre les valeurs grand ou petit, l’attribut couleur des
+    cheveux qui peut prendre les valeurs brun ou blond. Les nationalités possibles sont
+    français et suédois.
+    On suppose que les populations françaises et suédoises se répartissent selon le
+    tableau suivant :
+                   petit, brun petit, blond grand, brun grand, blond
+      Suédois         10           20              30             40
+      Français        25           25              25             25
+        1    Dans une assemblée comprenant 60% de suédois et 40% de français, décrire
+                  1   la règle de décision majoritaire
+                  2   la règle du maximum de vraisemblance
+                  3   la règle de Bayes
+        2    Calculez les probabilités d’erreur de chacune de ces règles
+        3    On suppose maintenant que l’on ne connaı̂t plus les proportions respectives
+             des suédois et des français. On note p la proportion des suédois (p ∈ [0, 1]).
+             Décrire, selon les valeurs possibles de p , les règles de Bayes
+             correspondantes.
+SPLEX Statistiques pour la classification et fouille de données en génomique
+                                                                            Classification probabiliste - Classification Linéaire Binaire   6 / 33
+   Classifieur Bayésien Naı̈f
+    Il peut être difficile d’obtenir P(Y ), P(X | Y ), P(Y | X ).
+    Particulièrement : P(X | Y ) peut demander beaucoup d’observation ! !
+
+    Hypothèse du classifieur bayésien naı̈f
+    On supposera que, ∀k ̸= l, X k                                  Xl |Y
+
+
+
+                                                              |=
+    Cette hypothèse est très forte. Elle a peu de chance de s’avouer exacte dans un cas réel. Néanmoins cette
+    approximation donne des résultats souvent satisfaisants.
+
+
+    Alors, le calcul du MAP s’écrit :
+      3    Maximum a posteriori
+                                                                                                                   !
+                                                                                         Y
+                                                                                         d
+                                               y = arg max P(yi ) ·                             P(x | yi )
+                                                                                                        k
+                                                                  yi
+                                                                                         k=1
+
+
+
+    Cette hypothèse permet donc de simplifier fortement les calculs nécessaires pour
+    estimer le MAP.
+
+SPLEX Statistiques pour la classification et fouille de données en génomique
+                                                                            Classification probabiliste - Classification Linéaire Binaire   7 / 33
+   Cas gaussien
+  Cadre
+                                                           
+           Modèle : Cb(x) = σ (g (x)) = σ g ○
+                                             + (x) − g○
+                                                      - (x)
+           Régions de décision :
+           ∀c ∈ ○, ^- ○
+                      +^ , Rc = x ∈ D, Cb(x) = c
+
+           Frontière de décision : F = x ∈ D, Cb(x) = 0
+           Multinormalité : ∀c ∈ {○,
+                                   - ○},
+                                      + gc (x) = P(x | c) ∼ N (µc , Σc )
+
+    ➽ Définition (Densité normale)
+                                                                1                1           t   −1
+                                        p(x) =                   d       1
+                                                                             e − 2 (x−µ) Σ            (x−µ)
+                                                                                                                 où
+                                                       (2π) |Σ|  2       2
+
+
+
+             µ le vecteur des moyennes,
+
+             Σ la matrice de covariance :
+                      ∀i, j ∈ {1, · · · , d} , Σ[i,j] = cov (Xi , Xj ) et Σ[i,i] = var (Xi )
+                      Σ semi-définie positive (∀x, x t Σx ≥ 0)
+                      |Σ| ≥ 0 et Σ−1 existe
+SPLEX Statistiques pour la classification et fouille de données en génomique
+                                                                            Classification probabiliste - Classification Linéaire Binaire   8 / 33
+                     Un exemple
+
+                           Les données –les couples (gènes 1, gène 2) – suivent un
+                           certain modèle : deux distributions de probabilité sur DX
+                           (une pour chaque classe).
+                                             10000
+                                                                                                               classe ALL
+                                                                                                               classe AML
+                                              9000                                                                Nouveau
+
+
+                                              8000
+
+
+                                              7000
+
+
+                                              6000
+
+
+                                              5000
+
+
+                                              4000
+
+
+                                              3000
+
+
+                                              2000
+
+
+                                              1000
+
+
+                                                 0
+                                                     0         500          1000         1500         2000          2500         3000
+                                                                                                                                             DM - 04/05 - – p. 2
+
+
+
+
+SPLEX Statistiques pour la classification et fouille de données en génomique
+                                                                            Classification probabiliste - Classification Linéaire Binaire                  9 / 33
+                     Le classifieur Bayésien naı̈f - 1
+
+                           Données :
+                               • l’ensemble d’apprentissage X = (x1 , x2 , · · · , xn ) où
+                                   xi = (vi1 , vi2 , · · · , vip )
+                               • un nouvel élément x = (v1 , · · · , vp )
+
+                           Problème : trouver la classe de x.
+                           Approche probabiliste :
+
+
+                                                                                                 P (x|c)P (c)
+                           cM AP = argmaxc P (c|x) = argmaxc                                                  = argmaxc P (x|c)P
+                                                                                                    P (x)
+
+                           Il faut estimer les probabilités P (c) et P (x|c) à partir de X.
+
+
+
+                                                                                                                                             DM - 04/05 - – p. 2
+
+
+
+
+SPLEX Statistiques pour la classification et fouille de données en génomique
+                                                                            Classification probabiliste - Classification Linéaire Binaire                10 / 33
+                     Le classifieur Bayésien naı̈f - 2
+
+                               • Estimation de P (c)
+
+                                                                    P (0) = n0 /n = 27/38
+                                                                    P (1) = n1 /n = 11/38
+                               • Le problème est plus compliqué pour P (x|c)
+
+                           Approche naïve Bayes : les attributs sont indépendants
+                           étant donnée la classe :
+
+                                                                P (x|c) = P (g1 |c)P (g2 |c)
+
+                           Il faut estimer P (g1 |c) et p(g2 |c) à partir de X.
+
+
+
+                                                                                                                                             DM - 04/05 - – p. 2
+
+
+
+
+SPLEX Statistiques pour la classification et fouille de données en génomique
+                                                                            Classification probabiliste - Classification Linéaire Binaire                11 / 33
+                     Le classifieur Bayésien naı̈f - 3
+
+                           Hypothèse de normalité :
+                               • P (g1 |c)               N (g1 , µg1 ,c , σg21 ,c )
+                               • P (g2 |c)               N (vp , µg2 ,c , σg22 ,c )
+                           On n’a plus qu’a estimer les moyennes et écart-types à
+                           partir de X.
+
+                                                  µg1 ,0 ≈ 810.29                               σg1 ,0 ≈ 338.17
+                                                 µg1 ,1 ≈ 1836.27                               σg1 ,1 ≈ 360.88
+
+                                                 µg1 ,0 ≈ 3863.29                               σg1 ,0 ≈ 1999.78
+                                                  µg1 ,0 ≈ 702.36                               σg1 ,0 ≈ 360.34
+
+
+                                                                                                                                             DM - 04/05 - – p. 2
+
+
+
+
+SPLEX Statistiques pour la classification et fouille de données en génomique
+                                                                            Classification probabiliste - Classification Linéaire Binaire                12 / 33
+                     Le classifieur Bayésien naı̈f - 4
+
+                    0.0012                                             classe ALL          0.0014
+                                                                       classe AML                                                              classe ALL
+                                                                                                                                               classe AML
+
+                                                                                           0.0012
+                    0.001
+
+
+                                                                                            0.001
+                    0.0008
+
+                                                                                           0.0008
+                    0.0006
+
+                                                                                           0.0006
+
+                    0.0004
+                                                                                           0.0004
+
+
+                    0.0002
+                                                                                           0.0002
+
+
+                        0                                                                      0
+
+
+
+                             0     500      1000      1500      2000       2500     3000            0   1000   2000    3000   4000   5000    6000       7000      8000
+
+
+
+                                 Fumarylacetoacetate                                                                  C-myb
+
+
+
+
+                                                                                                                                                    DM - 04/05 - – p. 2
+
+
+
+
+SPLEX Statistiques pour la classification et fouille de données en génomique
+                                                                            Classification probabiliste - Classification Linéaire Binaire                       13 / 33
+                     Le classifieur Bayésien naı̈f - 5
+
+                           On veut déterminer la classe de x = (1000, 1500) :
+
+                                                                                                
+                                P (0|x) = P (0)N 1500, µg1 ,0 , σg21 ,0 N 4000, µg2 ,0 , σg22 ,0
+                                        = 0.71053 × 1.01 10−3 × 9.92 10−5 = 7.11 10−8
+                                                                                                
+                                P (1|x) = P (1)N 1500, µg1 ,1 , σg21 ,1 N 4000, µg2 ,1 , σg22 ,1
+                                                 = 0.28947 × 7.54 10−5 × 9.55 10−5 = 2.09 10−9
+                            ⇒ cM AP              = 0
+
+
+
+
+                                                                                                                                             DM - 04/05 - – p. 2
+
+
+
+
+SPLEX Statistiques pour la classification et fouille de données en génomique
+                                                                            Classification probabiliste - Classification Linéaire Binaire                14 / 33
+   Classification linéaire binaire (CLB)
+                                                  ➽ Définition (CLB)
+                                                                              C = {○,
+                                                                                   - ○}
+                                                                                      +
+                                                          Π
+                                                                              ∃w ∈ Rd , w0 ∈ R, ∃f : R → C,
+                                                 D(.)           C (.)
+                                                                                                                                                    !
+                                                                                                                           X
+                                                                                                                           d
+                                                  D
+                                                        Cb(.)
+                                                                   C
+                                                                                   ∀x ∈ R , Cb(x) = f
+                                                                                                 d
+                                                                                                                                   wi · x i + w 0
+                                                                                                                            i=1
+
+                                                  Le problème d’apprentissage : trouver w , w0 et f .
+
+    Modèles génératifs, modèles discriminants
+             Modèles génératifs : classification grâce à une estimation de P(x, y ) à
+             partir de Πa et des connaissances a priori.
+                      Classifieur bayésien (ML, MAP)
+                      Classifieur bayésien naı̈f
+                      Discriminant linéaire de Fisher
+             Modèles discriminants : estimation directe des w , w0 à partir de Πa .
+                      Régression logistique
+                      Perceptron
+                      SVM
+SPLEX Statistiques pour la classification et fouille de données en génomique
+                                                                            Classification probabiliste - Classification Linéaire Binaire          15 / 33
+   Le classifieur bayésien naı̈f binaire est un CLB ?
+    Classifieur bayésien naı̈f
+                                                                                                                   !
+                                                                                         Y
+                                                                                         d
+                                               y = arg max P(yi ) ·                             P(x k | yi )
+                                                                  yi
+                                                                                         k=1
+
+             Ici, y0 = ○
+                       - et y1 = ○.
+                                 +
+                                                 Qd
+                                      P( ○)·
+                                         +                 P(x k | ○)
+                                                                   +
+             Soit R(x) = P(○)·Qdk=1
+                           -        P(x k |○)
+                                           -         k=1
+
+             Si R(x) > 1 alors Cb(x) = ○
+                                       ^ sinon Cb(x) = ○
+                                       +               ^-
+                                                  
+                                                  
+                                                  −1 si u < 0
+                     b
+             Donc C (x) = σ (log R(x)) où σ(u) = 0      si u = 0
+                                                  
+                                                  
+                                                   +1 sinon
+             Il vient alors
+                                                                                                                               !
+                                                          P( ○)
+                                                             +                              X
+                                                                                            d
+                                                                                                       P(x k | ○)
+                                                                                                               +
+                                            Cb(x) = σ log       +                                  log
+                                                          P(○)
+                                                             -                                         P(x | ○)
+                                                                                                           k   -
+                                                                                            k=1
+
+    Suite évidente dans le cas binomial (D = {○,
+                                               - ○}
+                                                  + )).                     d
+
+SPLEX Statistiques pour la classification et fouille de données en génomique
+                                                                            Classification probabiliste - Classification Linéaire Binaire   16 / 33
+   Discrimination linéaire - cas gaussien
+   Cadre gaussien
+                                                            
+            Modèle : Cb(x) = σ (g (x)) = σ g ○
+                                              + (x) − g○
+                                                       - (x)
+            Régions de décision :
+            ∀c ∈ ○, ^- ○
+                       +^ , Rc = x ∈ D, Cb(x) = c
+
+            Frontière de décision : F = x ∈ D, Cb(x) = 0
+            Multinormalité : ∀c ∈ {○,
+                                    - ○},
+                                       + P(x | c) ∼ N (µc , Σc )
+
+    CLB
+    Si homoscédasticité : ∀c, Σc = Σ alors, la fonction discriminante devient
+    linéaire :
+                                                                                   t
+                                              g (x) = µ ○
+                                                        + − µ○
+                                                             -                          Σ−1 (x − x0 )
+                                                                                                                          
+                                                                                             ○)
+    avec x0 = 12              µ○
+                               + + µ○
+                                    - +
+                                                                         1
+                                                                       t −1            log P( +
+                                                                                           P(○)
+                                                                                              -                                (µ ○
+                                                                                                                                  + − µ○
+                                                                                                                                       - )
+                                                             (µ ○   - ) Σ
+                                                                + −µ○       (µ ○   - )
+                                                                               + −µ○
+
+
+
+SPLEX Statistiques pour la classification et fouille de données en génomique
+                                                                            Classification probabiliste - Classification Linéaire Binaire   17 / 33
+   Rappels de géométrie
+                       Pd
+    Soit y (x) =          i=1 wi · xi + w0 ⇒ C (x) = f (y (x)), on peut également écrire :
+                                                       b
+
+
+                y (x) = w ′ · x + w0                              avec y (x) = 0 l’équation d’un hyperplan H
+
+    ∀a, b ∈ H, y (a) = y (b) = 0 ⇒ y (a) − y (b) = w ′ · (a − b) = 0
+
+
+                                                      w est un vecteur normal à H.
+
+    Soit x ̸∈ H et xH sa projection perpendiculaire sur H, x − xH est donc colinéaire à w ,
+                                w
+    Soit r ∈ R, x − xH = r ∗ ||w  ||
+                                     où r est la distance de x à H.
+                                                    w
+                                  x = xH + r ·
+                                                  ||w ||
+                                          ′            ′                w′ ·w      ′           ||w ||2    ′
+                                       w · x = w · xH + r ·                     = w · xH + r ·         = w · xH + r · ||w ||
+                                                                         ||w ||                 ||w ||
+                                 ′                     ′
+                   y (x) = w · x + w0 = w · xH + w0 + r · ||w || = y (xH ) + r · ||w || = r · ||w ||
+
+
+
+                                                                                                  y (x)
+                                                  distance de x à H : r =
+                                                                                                  ||W ||
+
+SPLEX Statistiques pour la classification et fouille de données en génomique
+                                                                            Classification probabiliste - Classification Linéaire Binaire   18 / 33
+   Rappels de géométrie
+
+
+                                      y (x) > 0
+
+
+
+
+                                  y (x) = 0
+
+
+                                                                         y (x)
+                                                                         ||w ||
+
+
+                                                                                                           x
+                                      y (x) < 0
+
+
+                                                                                                    xH
+                                                                     w
+
+
+
+
+                                               O
+                                                                             −w0
+                                                                             ||w ||
+
+
+
+SPLEX Statistiques pour la classification et fouille de données en génomique
+                                                                            Classification probabiliste - Classification Linéaire Binaire   19 / 33
+   exemple : Hyper-plan séparateurs
+                                                                           Pd
+    La frontière entre les deux classes est donnée par                       i=1 wi · xi + w0 = 0 qui est l’équation d’un hyper-plan.
+    Comment choisir cet hyper-plan ?
+
+
+
+    Exemple : CLB par régression linéaire
+             Ajuster un modèle linéaire l^k pour chaque
+                                                         fonction indicatrice d’une classe k :
+                                                          1 si x est de classe k
+                          ∀k ∈ { ○,+ ○}  - , l^k (x) =
+                                                          0 sinon.
+                         ^
+                         l○
+                          + (x) = β ○0 + +β
+                                                  ′
+                                                    · x et l^○
+                                                             - (x) = β○0
+                                                                      - +β
+                                                                             ′
+                                                                               ·x
+                                                                          ○
+                                                                          +                                                 ○
+                                                                                                                            -
+
+             Soit un x à classifier : Cb(x) = arg maxk l^k (x) = σ(l^○   ^- )
+                                                                      + − l○
+    Frontière de décision :                                
+                                                             
+                                                             w =                                            β○
+                                                                                                              + − β○
+                                                                                                                   -
+
+                                         - (x) ⇒ hyperplan :
+                               ^
+                               f○       ^
+                                + (x) = f○                     et
+                                                             
+                                                             
+                                                               w0 =                                          β ○0
+                                                                                                               + − β○0
+                                                                                                                    -
+
+
+
+
+SPLEX Statistiques pour la classification et fouille de données en génomique
+                                                                            Classification probabiliste - Classification Linéaire Binaire   20 / 33
+   Séparabilité
+
+
+                                                  ➽ Définition (CLB)
+                                                                              C = {○,
+                                                                                   - ○}
+                                                                                      +
+                                                          Π
+                                                                              ∃w ∈ Rd , w0 ∈ R, ∃f : R → C,
+                                                 D(.)           C (.)
+                                                                                                                                                    !
+                                                                                                                           X
+                                                                                                                           d
+                                                  D
+                                                        Cb(.)
+                                                                   C
+                                                                                   ∀x ∈ R , Cb(x) = f
+                                                                                                 d
+                                                                                                                                   wi · x i + w 0
+                                                                                                                            i=1
+
+                                                  Le problème d’apprentissage : trouver w , w0 (W) et f (souvent σ).
+
+
+
+    Séparabilité sur Πa
+    Soit une base de données Πa = (xi , yi )i<N où yi est la classe de xi (∈ −1, +1).
+    Πa est linéairement séparable si il existe un hyperplan d’équation
+    y (x) = w ′ · x + w0 = 0) tel que
+
+                              ∀i ∈ {1, · · · , N}, y (xi ) · yi > 0 i.e. (X · W) × Y > 0
+
+SPLEX Statistiques pour la classification et fouille de données en génomique
+                                                                            Classification probabiliste - Classification Linéaire Binaire          21 / 33
+   Optimisation de W : moindres carrés
+                                        X · W − Y est le vecteur des erreurs effectuées en classant Πa
+                                     à l’aide de W.
+                                        L’erreur quadratique obtenue sur Πa se calcule donc comme :
+                                                                                                          ′
+                                                               e 2 (W) = (X · W − Y) · (X · W − Y)
+        Carl Friedrich Gauss
+
+        Minimiser cette erreur en annulant le gradient donne :
+                                                                              −1
+                                                 W∗ = (X ′ · X)                     · X ′ · Y = X† · Y
+                        −1
+    X† = X ′ · X               · X ′ est la pseudo-inverse de X .
+
+
+
+
+        Cette méthode souffre de plusieurs
+       problèmes :
+                Instabilité numérique (pour des X de
+                grande taille principalement),
+                Manque de robustesse pour des
+                distributions larges de classes.
+
+
+                                                                                    From : Pattern Recognition and Machine Learning – C.Bishop – p186
+SPLEX Statistiques pour la classification et fouille de données en génomique
+                                                                            Classification probabiliste - Classification Linéaire Binaire         22 / 33
+   Discrimants de Fisher : séparation entre les classes
+       On note que y = w ′ · x correspond à la projection de x (de dimension d + 1) sur la droite vectorielle w.
+                    1
+                       P                        1
+                                                   P
+       Soit M ○
+              + = N          + Xi et M○
+                          i∈ ○          - = N         i∈○- Xi
+                            ○
+                            +                                    ○
+                                                                 -
+
+       On peut alors utiliser ∆w = w ′ · M ○
+                                                  
+                                           + − M○
+                                                -   comme mesure de la séparation des classes selon w.
+                                                                                                       ∆w
+    Afin de supprimer l’influence sur ∆w de la norme de w, on peut soit normaliser w, soit utiliser         comme mesure.
+                                                                                                      ||w||
+
+
+
+
+                                               From : Pattern Recognition and Machine Learning – C.Bishop – p188
+
+     La séparation des classes n’est intéressante qu’en fonction de la dispersion de chaque classe, i.e.
+                       P              ′
+    ∀k ∈ ○,
+         + ○,  - sk =                          2
+                          i∈k (yi − w · Mk ) les variances intra-classe.
+
+SPLEX Statistiques pour la classification et fouille de données en génomique
+                                                                            Classification probabiliste - Classification Linéaire Binaire   23 / 33
+   De la régression linéaire vers la régression logistique
+
+    Régression linéaire
+                                                                 y^(x) = w ′ · x + w0
+    Frontière de séparation : hyperplan d’équation y (x) = w ′ · x + w0 = 0
+    En réutilisant MAP pour décider :
+                                                               y^ = arg        max        p(c | x)
+                                                                            c∈{ ○,
+                                                                                + ○}
+                                                                                   -
+
+
+    On ne peut pas ajuster linéairement une probabilité : une droite n’est pas bornée par [0, 1].
+    Idée : La frontière de décision correspond à
+
+                                                                           p( ○
+                                                                              + | x)            p( ○
+                                                                                                   + | x)
+                                p( ○
+                                   + | x) = p(○
+                                              - | x) ⇐⇒                              = 1 ⇐⇒ log           =0
+                                                                           p(○- | x)            p(○- | x)
+
+    On peut renforcer l’idée que la frontière est un hyperplan (CLB) par :
+
+
+    Régression logistique
+                                                                    p( ○
+                                                                       + | x)
+                                            ∃w , w0 , log                     = w ′ · x + w0
+                                                                    p(○- | x)
+
+SPLEX Statistiques pour la classification et fouille de données en génomique
+                                                                            Classification probabiliste - Classification Linéaire Binaire   24 / 33
+   fonction logit
+                           ○|x)        p( ○|x)
+    On peut écrire log p( +
+                        p(○|x)
+                           -    = log 1−p(+
+                                           ○|x)
+                                           +
+
+
+
+                   Fonction logit (log-odds)
+                                                          p
+                             logit(p) = log
+                                                         1−p
+
+
+   La fonction logit est non bornée et donc peut
+   être ajuster linéairement.
+                                                                               ′                                     w ′ ·x+w0
+    logit(p) = w ′ · x + w0 ⇐⇒ 1−p
+                                p
+                                   = e w ·x+w0 ⇐⇒ p = 1+e
+                                                       e
+                                                          w ′ ·x+w0
+
+
+
+                  Modèle de la régression logistique
+                                                                ′
+                                             e w ·x+w0                         1
+                               p( ○
+                                  + | x) =                 et p(○
+                                                                - | x) =
+                                           1 + e w ′ ·x+w0               1 + e w ′ ·x+w0
+
+
+SPLEX Statistiques pour la classification et fouille de données en génomique
+                                                                            Classification probabiliste - Classification Linéaire Binaire   25 / 33
+   Utilisation de la régression logistique
+
+    Soit une base Πa = (Xi , Yi ) avec Yi ∈ { ○,   + ○},
+                                                     -
+    On peut calculer pour chacun w ′ · x + w0 ,
+                                       ′
+                                    e w ·x+w0
+    et donc calculer p( ○
+                        + | x) = 1+e   w ′ ·x+w0 .
+
+
+
+
+SPLEX Statistiques pour la classification et fouille de données en génomique
+                                                                            Classification probabiliste - Classification Linéaire Binaire   26 / 33
+   Estimation des paramètres w , w0
+
+    Comment calculer les valeurs de w et w0 de la régression logistique ?
+
+       Moindre carrés ? Impossible car les erreurs ne sont pas distribuées suivant une
+    loi normale : Elle est quasi nulle quand p proche de 0 ou 1 et plus importante
+    quand p ≈ 0.5.
+
+        Utilisation du Maximum de Vraisemblance :
+          Exprimer la vraisemblance L(X ; w , w0 ) pour w et w0 ,
+          Essayer de maximiser la vraisemblance
+          En annulant la dérivée mais pas de forme exacte de la dérivée.
+          Utiliser une méthode approchée : Algorithme de Newton-Raphson.
+
+        Soit une base de données (X , Y )i≤N . Avec yi = 1 si ○      + et 0 si ○.-
+          ∀i, L(xi ; w , w0 ) = yi · p(xi | ○)
+                                            + + (1 − yi ) · p(xi |○)
+                                                                  -
+                         ○|x)                                          ○)
+          Or si log p(   +
+                      p(○|x)
+                          -    = w ′ · x + w0 alors ∃β, β0 , log p(x|  +
+                                                                   p(x|○)
+                                                                       -  = β ′ · x + β0
+                                         β ′ ·x+β0
+             p(x | ○)   e
+                   + = 1+e β ′ ·x+β0 et p(x | ○)
+                                              - = 1+e β1′ ·x+β0
+
+
+SPLEX Statistiques pour la classification et fouille de données en génomique
+                                                                            Classification probabiliste - Classification Linéaire Binaire   27 / 33
+   Estimation des paramètres β+ = (β, β0 )
+
+    En sommant sur toute la base la log-vraisemblance,
+
+                                                     X
+                                                     N h            ′                  ′
+                                                                                                  i
+                                 LL(β+ ) =                     yi · β+ · xi+ − log(1 + β+ · xi+ )
+                                                      i=1
+
+    On veut maximiser la log-vraisemblance.
+
+                                                  ∂LL(β+ ) X
+                                                             N
+
+                                                      +   =     xi · (yi − p(xi ; β+ )
+                                                    ∂βi     i=1
+
+    Pas de forme simple, il faut utiliser une méthode approchée (Newton-Raphson)
+                                                ∂2 LL(β+ )
+    utilisant la dérivée seconde (le Hessien) ∂β + ∂β+ ′ .
+                                                 +
+    La mise à jour (jusque convergence) de β prend la forme :
+                                                                       2        −1
+                                                                       ∂ LL(β+ )       ∂LL(β+ )
+                                           β+      +
+                                            t+1 = βt −                    +  + ′     ·
+                                                                       ∂β ∂β             ∂β+
+
+
+SPLEX Statistiques pour la classification et fouille de données en génomique
+                                                                            Classification probabiliste - Classification Linéaire Binaire   28 / 33
+   Méthode de Newton (1/2)
+
+    fonction de classe C 2
+       f : [a, b] ⊂ R 7→ R
+       f : 2 fois dérivable
+       f ′′ continue
+
+    Méthode de Newton-Raphson : recherche de 0 de la dérivée
+        principe : engendrer une suite de points (x k ) tendant
+        vers un point stationnaire
+        point stationnaire : f ′ (x ∗ ) = 0
+        itération k : f ′ est remplacée par sa linéarisée en x k :
+        l(x) = f ′ (x k ) + [x − x k ]f ′′ (x k )
+        x k+1 déterminé par l(x k+1 ) = 0 :
+                            f ′ (x k )
+        =⇒ x k+1 = x k − ′′ k
+                            f (x )
+
+
+SPLEX Statistiques pour la classification et fouille de données en génomique
+                                                                            Classification probabiliste - Classification Linéaire Binaire   29 / 33
+   Méthode de Newton (2/2)
+
+
+
+                       f ′ (x)
+
+
+
+
+                                                                                                                                      x
+                                                                         xk+2                xk+1                 xk
+
+
+
+
+SPLEX Statistiques pour la classification et fouille de données en génomique
+                                                                            Classification probabiliste - Classification Linéaire Binaire   30 / 33
+   Un exemple (1/3)
+
+
+
+
+                                                                                            From Jia Li (Pensylvania State University)
+
+
+
+SPLEX Statistiques pour la classification et fouille de données en génomique
+                                                                            Classification probabiliste - Classification Linéaire Binaire   31 / 33
+   Un exemple (2/3)
+
+
+
+
+                                                                                            From Jia Li (Pensylvania State University)
+
+
+
+SPLEX Statistiques pour la classification et fouille de données en génomique
+                                                                            Classification probabiliste - Classification Linéaire Binaire   32 / 33
+   Un exemple (3/3)
+
+
+
+
+                                                                                            From Jia Li (Pensylvania State University)
+
+
+SPLEX Statistiques pour la classification et fouille de données en génomique
+                                                                            Classification probabiliste - Classification Linéaire Binaire   33 / 33
+
